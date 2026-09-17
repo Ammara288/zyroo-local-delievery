@@ -1,3 +1,5 @@
+import CreateOrder from "./pages/CreateOrder";
+import EditOrder from "./pages/EditOrder";
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
@@ -48,6 +50,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/orders/new"
+  element={
+    <ProtectedRoute allowedRoles={["business"]}>
+      <CreateOrder />
+    </ProtectedRoute>
+  }
+/>
+<Route path="/orders/:id/edit" element={<ProtectedRoute allowedRoles={["business"]}><EditOrder /></ProtectedRoute>} />
         <Route
           path="/orders"
           element={

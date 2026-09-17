@@ -1,12 +1,17 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { orders } from '../data/mockData';
+import { orders as mockOrders } from '../data/mockData';
 
 function Tracking() {
   const { id } = useParams();
+
+  // Load orders from localStorage (if updated), otherwise from mockData
+  const savedOrders = localStorage.getItem('zyroo_orders');
+  const orders = savedOrders ? JSON.parse(savedOrders) : mockOrders;
+
   const order = orders.find(o => o.id === id);
 
-  // Agar id nahi di gayi (jaise /tracking page direct khula hai)
+  // Agar id nahi di gayi
   if (!id) {
     return (
       <div className="tracking-page">
@@ -40,7 +45,6 @@ function Tracking() {
         <p className="tracking-sub">Real-time updates for your delivery</p>
 
         <div className="tracking-card">
-          {/* Order ID Header */}
           <div className="tracking-order-header">
             Order: {order.id}
           </div>
