@@ -1,43 +1,41 @@
 import React, { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { orders as mockOrders } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
-import { CheckCircle, Truck, Package, Home, AlertCircle } from 'lucide-react';
+import { CheckCircle, Truck, Package, Home, AlertCircle, Phone, MapPin, User, Calendar, CreditCard, Clock } from 'lucide-react';
 
 function OrderDetails() {
   const { id } = useParams();
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [refresh, setRefresh] = useState(0);
 
-  // Load orders from localStorage (if updated), otherwise from mockData
   const savedOrders = localStorage.getItem('zyroo_orders');
   const orders = savedOrders ? JSON.parse(savedOrders) : mockOrders;
 
   const order = orders.find(o => o.id === id);
 
   if (!order) return (
-    <div className="detail-empty">
-      <h2>Order not found</h2>
-      <Link to="/orders" className="detail-back">← Back to Orders</Link>
+    <div className="detail-page">
+      <div className="detail-empty">
+        <h2>Order not found</h2>
+        <Link to="/orders" className="detail-back">← Back to Orders</Link>
+      </div>
     </div>
   );
 
   const isRider = user?.role === 'rider';
-  const isBusiness = user?.role === 'business';
   const isAssignedRider = isRider && order.rider && order.rider.toLowerCase().includes(user.name.toLowerCase().split(' ')[0]);
 
-  // Timeline
+  // Timeline steps
   const timelineSteps = [
-    { label: 'Created', done: true },
-    { label: 'Assigned', done: order.timeline?.some(t => t.status === 'Assigned') || order.rider !== 'Not Assigned' },
-    { label: 'Accepted', done: order.timeline?.some(t => t.status === 'Accepted') || ['Accepted','Picked Up','In Transit','Delivered'].includes(order.status) },
-    { label: 'Picked Up', done: order.timeline?.some(t => t.status === 'Picked Up') || ['Picked Up','In Transit','Delivered'].includes(order.status) },
-    { label: 'In Transit', done: order.timeline?.some(t => t.status === 'In Transit') || ['In Transit','Delivered'].includes(order.status) },
-    { label: 'Delivered', done: order.status === 'Delivered' },
+    { label: 'Created', done: true, icon: '📝' },
+    { label: 'Assigned', done: order.timeline?.some(t => t.status === 'Assigned') || order.rider !== 'Not Assigned', icon: '👤' },
+    { label: 'Accepted', done: order.timeline?.some(t => t.status === 'Accepted') || ['Accepted','Picked Up','In Transit','Delivered'].includes(order.status), icon: '✓' },
+    { label: 'Picked Up', done: order.timeline?.some(t => t.status === 'Picked Up') || ['Picked Up','In Transit','Delivered'].includes(order.status), icon: '📦' },
+    { label: 'In Transit', done: order.timeline?.some(t => t.status === 'In Transit') || ['In Transit','Delivered'].includes(order.status), icon: '🚚' },
+    { label: 'Delivered', done: order.status === 'Delivered', icon: '🏠' },
   ];
 
-  // Update status function
   const updateStatus = (newStatus) => {
     const updated = orders.map(o => {
       if (o.id === order.id) {
@@ -54,19 +52,17 @@ function OrderDetails() {
     setRefresh(refresh + 1);
   };
 
-  // Determine next action for rider
   const getRiderAction = () => {
     if (!isAssignedRider && !isRider) return null;
-
     switch (order.status) {
       case 'Assigned':
-        return { label: 'Accept Delivery', next: 'Accepted', icon: <CheckCircle size={20} />, color: '#4338ca' };
+        return { label: 'Accept Delivery', next: 'Accepted', icon: <CheckCircle size={18} /> };
       case 'Accepted':
-        return { label: 'Mark as Picked Up', next: 'Picked Up', icon: <Package size={20} />, color: '#c2410c' };
+        return { label: 'Mark as Picked Up', next: 'Picked Up', icon: <Package size={18} /> };
       case 'Picked Up':
-        return { label: 'Mark as In Transit', next: 'In Transit', icon: <Truck size={20} />, color: '#2563eb' };
+        return { label: 'Mark as In Transit', next: 'In Transit', icon: <Truck size={18} /> };
       case 'In Transit':
-        return { label: 'Mark as Delivered', next: 'Delivered', icon: <Home size={20} />, color: '#16a34a' };
+        return { label: 'Mark as Delivered', next: 'Delivered', icon: <Home size={18} /> };
       default:
         return null;
     }
@@ -79,18 +75,18 @@ function OrderDetails() {
       {/* Back Link */}
       <Link to="/orders" className="detail-back">← Back to Orders</Link>
 
-      {/* Header Card */}
+      {/* Header */}
       <div className="detail-header">
         <div>
           <p className="detail-header-label">ORDER ID</p>
           <h1 className="detail-header-id">#{order.id}</h1>
         </div>
-        <div className="detail-header-status" style={{ background: 'rgba(255,255,255,0.22)' }}>
+        <div className="detail-header-status">
           {order.status}
         </div>
       </div>
 
-      {/* Rider Action Panel (only for assigned rider) */}
+      {/* Rider Action Panel */}
       {riderAction && (
         <div className="rider-action-panel">
           <div className="rider-action-info">
@@ -103,7 +99,6 @@ function OrderDetails() {
           <button
             className="rider-action-btn"
             onClick={() => updateStatus(riderAction.next)}
-            style={{ background: `linear-gradient(135deg, ${riderAction.color}, #dc2626)` }}
           >
             {riderAction.icon}
             {riderAction.label}
@@ -111,15 +106,13 @@ function OrderDetails() {
         </div>
       )}
 
-      {/* If rider, but not assigned to this order */}
+      {/* Rider Warnings */}
       {isRider && !isAssignedRider && order.rider !== 'Not Assigned' && (
         <div className="rider-warning">
           <AlertCircle size={18} />
           <span>This order is assigned to <b>{order.rider}</b>, not you.</span>
         </div>
       )}
-
-      {/* If order has no rider */}
       {isRider && order.rider === 'Not Assigned' && (
         <div className="rider-warning">
           <AlertCircle size={18} />
@@ -127,7 +120,7 @@ function OrderDetails() {
         </div>
       )}
 
-      {/* Info Grid */}
+      {/* Info Cards */}
       <div className="detail-info-grid">
         <InfoCard icon="👤" label="Customer" value={order.customer} />
         <InfoCard icon="🏍️" label="Rider" value={order.rider || 'Not Assigned'} />
@@ -135,49 +128,28 @@ function OrderDetails() {
         <InfoCard icon="🎯" label="Delivery" value={order.delivery} />
       </div>
 
-      {/* Extra Info */}
+      {/* Package & Order Info */}
       <div className="detail-timeline">
         <h2>📦 Package & Order Info</h2>
         <div className="detail-extrainfo">
-          <div className="extrainfo-row">
-            <span className="extrainfo-label">Customer Phone</span>
-            <span className="extrainfo-value">{order.customerPhone || '—'}</span>
-          </div>
-          <div className="extrainfo-row">
-            <span className="extrainfo-label">Package Details</span>
-            <span className="extrainfo-value">{order.packageDetails || '—'}</span>
-          </div>
-          <div className="extrainfo-row">
-            <span className="extrainfo-label">Priority</span>
-            <span className="extrainfo-value">{order.priority || 'Normal'}</span>
-          </div>
-          <div className="extrainfo-row">
-            <span className="extrainfo-label">Payment Method</span>
-            <span className="extrainfo-value">{order.paymentMethod || 'Cash on Delivery'}</span>
-          </div>
-          <div className="extrainfo-row">
-            <span className="extrainfo-label">Order Date</span>
-            <span className="extrainfo-value">{order.date || '—'}</span>
-          </div>
-          <div className="extrainfo-row">
-            <span className="extrainfo-label">Pickup Address</span>
-            <span className="extrainfo-value">{order.pickupAddress || order.pickup}</span>
-          </div>
-          <div className="extrainfo-row">
-            <span className="extrainfo-label">Delivery Address</span>
-            <span className="extrainfo-value">{order.deliveryAddress || order.delivery}</span>
-          </div>
+          <InfoRow label="Customer Phone" value={order.customerPhone || '—'} />
+          <InfoRow label="Package Details" value={order.packageDetails || '—'} />
+          <InfoRow label="Priority" value={order.priority || 'Normal'} badge={order.priority} />
+          <InfoRow label="Payment Method" value={order.paymentMethod || 'Cash on Delivery'} />
+          <InfoRow label="Order Date" value={order.date || '—'} />
+          <InfoRow label="Pickup Address" value={order.pickupAddress || order.pickup} />
+          <InfoRow label="Delivery Address" value={order.deliveryAddress || order.delivery} />
         </div>
       </div>
 
-      {/* Timeline */}
+      {/* Timeline Visual */}
       <div className="detail-timeline">
         <h2>🕐 Delivery Timeline</h2>
         <div className="timeline-steps">
           {timelineSteps.map((step, index) => (
             <div key={index} className="timeline-step">
               <div className={`timeline-dot ${step.done ? 'done' : ''}`}>
-                {step.done ? '✓' : '•'}
+                {step.done ? step.icon : '•'}
               </div>
               <p className={`timeline-label ${step.done ? 'done' : ''}`}>
                 {step.label}
@@ -187,7 +159,7 @@ function OrderDetails() {
         </div>
       </div>
 
-      {/* Timeline History (Detailed) */}
+      {/* Timeline History */}
       {order.timeline && order.timeline.length > 1 && (
         <div className="detail-timeline">
           <h2>📋 Status History</h2>
@@ -197,7 +169,12 @@ function OrderDetails() {
                 <div className="history-dot"></div>
                 <div className="history-info">
                   <b>{entry.status}</b>
-                  <small>{new Date(entry.time).toLocaleString('en-PK', { dateStyle: 'medium', timeStyle: 'short' })}</small>
+                  <small>
+                    {new Date(entry.time).toLocaleString('en-PK', {
+                      dateStyle: 'medium',
+                      timeStyle: 'short'
+                    })}
+                  </small>
                 </div>
               </div>
             ))}
@@ -218,6 +195,19 @@ const InfoCard = ({ icon, label, value }) => (
     <div className="infocard-icon">{icon}</div>
     <p className="infocard-label">{label.toUpperCase()}</p>
     <p className="infocard-value">{value}</p>
+  </div>
+);
+
+const InfoRow = ({ label, value, badge }) => (
+  <div className="extrainfo-row">
+    <span className="extrainfo-label">{label}</span>
+    {badge ? (
+      <span className={`extrainfo-value priority-${(badge || 'normal').toLowerCase()}`}>
+        {value}
+      </span>
+    ) : (
+      <span className="extrainfo-value">{value}</span>
+    )}
   </div>
 );
 

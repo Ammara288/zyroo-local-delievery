@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { User, Phone, MapPin, Package, AlertCircle, Save, ArrowLeft, CreditCard, Weight, Clock, FileText } from "lucide-react";
 import { orders as mockOrders, PRIORITY_OPTIONS, PAYMENT_OPTIONS } from "../data/mockData";
 
@@ -9,6 +9,7 @@ export default function EditOrder() {
 
   const savedOrders = localStorage.getItem("zyroo_orders");
   const allOrders = savedOrders ? JSON.parse(savedOrders) : mockOrders;
+
   const existing = allOrders.find(o => o.id === id);
 
   const [form, setForm] = useState({
@@ -27,9 +28,11 @@ export default function EditOrder() {
   const [loading, setLoading] = useState(false);
 
   if (!existing) return (
-    <div className="detail-empty">
-      <h2>Order not found</h2>
-      <Link to="/orders" className="detail-back">← Back to Orders</Link>
+    <div className="detail-page">
+      <div className="detail-empty">
+        <h2>Order not found</h2>
+        <Link to="/orders" className="detail-back">← Back to Orders</Link>
+      </div>
     </div>
   );
 
@@ -40,10 +43,12 @@ export default function EditOrder() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!form.customer || !form.customerPhone || !form.pickupAddress || !form.deliveryAddress || !form.packageDetails) {
       setError("Please fill in all required fields");
       return;
     }
+
     setLoading(true);
 
     const updated = allOrders.map(o => {
@@ -78,7 +83,7 @@ export default function EditOrder() {
           <ArrowLeft size={18} /> Back to Order
         </button>
         <h1>✏️ Edit Order</h1>
-        <p>Update order details for <b>{id}</b></p>
+        <p>Update order details for <b>#{id}</b></p>
       </div>
 
       {error && (
@@ -94,6 +99,7 @@ export default function EditOrder() {
             <span className="form-section-icon">👤</span>
             <div><h2 className="form-section-title">Customer Information</h2></div>
           </div>
+
           <div className="formrow-2">
             <label>Customer Name *
               <div className="inputwrap">
@@ -116,12 +122,14 @@ export default function EditOrder() {
             <span className="form-section-icon">📍</span>
             <div><h2 className="form-section-title">Pickup & Delivery</h2></div>
           </div>
+
           <label>Pickup Address *
             <div className="inputwrap">
               <MapPin size={18} />
               <input type="text" name="pickupAddress" value={form.pickupAddress} onChange={handleChange} />
             </div>
           </label>
+
           <label>Delivery Address *
             <div className="inputwrap">
               <MapPin size={18} />
@@ -136,12 +144,14 @@ export default function EditOrder() {
             <span className="form-section-icon">📦</span>
             <div><h2 className="form-section-title">Package Details</h2></div>
           </div>
+
           <label>Package Description *
             <div className="inputwrap textarea-wrap">
               <Package size={18} />
               <textarea name="packageDetails" value={form.packageDetails} onChange={handleChange} rows={3} />
             </div>
           </label>
+
           <div className="formrow-2">
             <label>Weight (kg)
               <div className="inputwrap">
@@ -161,6 +171,7 @@ export default function EditOrder() {
               </div>
             </label>
           </div>
+
           <label>Special Instructions
             <div className="inputwrap textarea-wrap">
               <FileText size={18} />
@@ -175,6 +186,7 @@ export default function EditOrder() {
             <span className="form-section-icon">⚙️</span>
             <div><h2 className="form-section-title">Delivery Options</h2></div>
           </div>
+
           <div className="formrow-2">
             <label>Priority
               <div className="inputwrap">

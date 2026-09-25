@@ -6,7 +6,6 @@ import { useAuth } from "../context/AuthContext";
 export default function Register() {
   const navigate = useNavigate();
   const { register } = useAuth();
-
   const [role, setRole] = useState("customer");
   const [form, setForm] = useState({
     name: "",
@@ -31,7 +30,6 @@ export default function Register() {
     setError("");
     setLoading(true);
 
-    // Validation
     if (!form.name || !form.email || !form.password) {
       setError("Please fill in all required fields");
       setLoading(false);
@@ -50,7 +48,6 @@ export default function Register() {
       return;
     }
 
-    // Create user data based on role
     const userData = {
       name: form.name,
       email: form.email,
@@ -70,7 +67,6 @@ export default function Register() {
     }
 
     const result = register(userData);
-
     if (result.success) {
       navigate("/dashboard");
     } else {

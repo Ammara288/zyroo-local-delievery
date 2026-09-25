@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  // Login function
+  // Login
   const login = (email, password) => {
     const foundUser = mockUsers.find(
       (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
@@ -32,14 +32,14 @@ export function AuthProvider({ children }) {
 
     const userData = { ...foundUser };
     delete userData.password;
+
     setUser(userData);
     localStorage.setItem("zyroo_user", JSON.stringify(userData));
     return { success: true, user: userData };
   };
 
-  // Register function
+  // Register
   const register = (userData) => {
-    // Check if email already exists
     const exists = mockUsers.find(
       (u) => u.email.toLowerCase() === userData.email.toLowerCase()
     );
@@ -48,24 +48,24 @@ export function AuthProvider({ children }) {
       return { success: false, error: "Email already registered" };
     }
 
-    // Create new user (in real app, this goes to backend)
     const newUser = {
       id: "U" + Date.now(),
       ...userData,
       createdAt: new Date().toISOString(),
     };
 
-    // Save to mock users (in memory)
     mockUsers.push(newUser);
 
     const userWithoutPassword = { ...newUser };
     delete userWithoutPassword.password;
+
     setUser(userWithoutPassword);
     localStorage.setItem("zyroo_user", JSON.stringify(userWithoutPassword));
+
     return { success: true, user: userWithoutPassword };
   };
 
-  // Logout function
+  // Logout
   const logout = () => {
     setUser(null);
     localStorage.removeItem("zyroo_user");
@@ -77,11 +77,11 @@ export function AuthProvider({ children }) {
     setUser(updatedUser);
     localStorage.setItem("zyroo_user", JSON.stringify(updatedUser));
 
-    // Also update in mockUsers array
     const index = mockUsers.findIndex((u) => u.id === user.id);
     if (index !== -1) {
       mockUsers[index] = { ...mockUsers[index], ...updates };
     }
+
     return { success: true };
   };
 

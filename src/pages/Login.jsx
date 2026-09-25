@@ -6,7 +6,6 @@ import { useAuth } from "../context/AuthContext";
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
-
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,7 +27,6 @@ export default function Login() {
     }
 
     const result = login(form.email, form.password);
-
     if (result.success) {
       navigate("/dashboard");
     } else {
@@ -37,7 +35,6 @@ export default function Login() {
     }
   };
 
-  // Quick demo login
   const quickLogin = (email, password) => {
     setForm({ email, password });
     const result = login(email, password);
@@ -101,8 +98,7 @@ export default function Login() {
         </form>
 
         <p className="authswitch">
-          Don't have an account?{" "}
-          <Link to="/register">Create one now</Link>
+          Don't have an account? <Link to="/register">Create one now</Link>
         </p>
 
         {/* Demo Accounts */}

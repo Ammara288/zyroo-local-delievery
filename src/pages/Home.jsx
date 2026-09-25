@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Package, Truck, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, Package, Truck, ShieldCheck, MapPin, Clock, Users } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Home() {
@@ -38,7 +38,7 @@ export default function Home() {
             )}
           </div>
 
-          {/* Quick role badges */}
+          {/* Role badges */}
           <div className="hero-roles">
             <span>🏢 Business</span>
             <span>🏍️ Rider</span>
@@ -73,7 +73,8 @@ export default function Home() {
             </div>
             <h3>Real-Time Tracking</h3>
             <p>
-              Customers can check their order status anytime, anywhere.
+              Customers can check their order status anytime, anywhere with
+              live map tracking.
             </p>
           </div>
 
@@ -103,20 +104,23 @@ export default function Home() {
               <h4>Business Creates</h4>
               <p>Business adds a delivery order with pickup and drop details</p>
             </div>
+
             <div className="step-item">
               <div className="step-number">2</div>
               <h4>Rider Assigned</h4>
               <p>Business assigns the order to an available rider</p>
             </div>
+
             <div className="step-item">
               <div className="step-number">3</div>
               <h4>Rider Delivers</h4>
               <p>Rider picks up, updates status, and delivers the package</p>
             </div>
+
             <div className="step-item">
               <div className="step-number">4</div>
               <h4>Customer Tracks</h4>
-              <p>Customer sees real-time status of their delivery</p>
+              <p>Customer sees real-time status of their delivery on map</p>
             </div>
           </div>
         </div>

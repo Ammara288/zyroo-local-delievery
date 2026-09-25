@@ -1,15 +1,25 @@
-import React from 'react';
-import { orders } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { orders as mockOrders } from '../data/mockData';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Dashboard() {
   const { user } = useAuth();
+  const [orders, setOrders] = useState([]);
+
+  // Load orders from localStorage or mockData
+  useEffect(() => {
+    const saved = localStorage.getItem('zyroo_orders');
+    setOrders(saved ? JSON.parse(saved) : mockOrders);
+  }, []);
+
   const total = orders.length;
   const pending = orders.filter(o => o.status === 'Pending').length;
-  const inDelivery = orders.filter(o => o.status === 'In Transit').length;
+  const inDelivery = orders.filter(o => ['Assigned','Accepted','Picked Up','In Transit'].includes(o.status)).length;
   const completed = orders.filter(o => o.status === 'Delivered').length;
-  const recentOrders = orders.slice(0, 3);
+
+  // Recent orders (latest 3)
+  const recentOrders = [...orders].reverse().slice(0, 3);
 
   // Role-based heading
   const roleHeading = {
@@ -18,6 +28,7 @@ function Dashboard() {
     customer: { icon: '👤', title: 'My Orders', subtitle: 'Track your deliveries' },
     admin: { icon: '👑', title: 'Admin Dashboard', subtitle: 'System overview' },
   };
+
   const heading = roleHeading[user?.role] || roleHeading.business;
 
   return (
@@ -27,7 +38,9 @@ function Dashboard() {
         <h1>{heading.icon} {heading.title}</h1>
         <p>{heading.subtitle}</p>
         {user?.name && (
-          <p className="dashuser">Welcome back, <b>{user.name}</b>!</p>
+          <p className="dashuser">
+            Welcome back, <b>{user.name}</b>!
+          </p>
         )}
       </div>
 
@@ -42,22 +55,28 @@ function Dashboard() {
       {/* Recent Orders */}
       <div className="dashrecent">
         <div className="dashrecent-head">
-          <h2>Recent Orders</h2>
+          <h2>📋 Recent Orders</h2>
           <Link to="/orders" className="dashlink">View All →</Link>
         </div>
 
-        {recentOrders.map((order) => (
-          <Link key={order.id} to={`/orders/${order.id}`} className="dashorder">
-            <div className="dashorder-left">
-              <span className="dashorder-id">{order.id}</span>
-              <div>
-                <p className="dashorder-name">{order.customer}</p>
-                <p className="dashorder-route">{order.pickup} → {order.delivery}</p>
+        {recentOrders.length === 0 ? (
+          <div className="orders-empty" style={{ padding: '40px 20px' }}>
+            <p>No orders yet.</p>
+          </div>
+        ) : (
+          recentOrders.map((order) => (
+            <Link key={order.id} to={`/orders/${order.id}`} className="dashorder">
+              <div className="dashorder-left">
+                <span className="dashorder-id">{order.id}</span>
+                <div>
+                  <p className="dashorder-name">{order.customer}</p>
+                  <p className="dashorder-route">{order.pickup} → {order.delivery}</p>
+                </div>
               </div>
-            </div>
-            <StatusBadge status={order.status} />
-          </Link>
-        ))}
+              <StatusBadge status={order.status} />
+            </Link>
+          ))
+        )}
       </div>
     </div>
   );
@@ -77,6 +96,7 @@ const StatusBadge = ({ status }) => {
     'In Transit': 'status-transit',
     'Delivered': 'status-delivered',
   }[status] || 'status-pending';
+
   return <span className={`statusbadge ${cls}`}>{status}</span>;
 };
 

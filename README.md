@@ -57,8 +57,19 @@ The project uses **mock data** stored in `localStorage` (no backend required), m
 
 ### 👤 Customer Features
 - **My Orders** — View all personal orders
-- **Live Tracking** — Real-time status and route visualization
+- **Live Tracking** — Delivery route and simulated rider location
 - **Order Details** — Complete information with timeline
+
+### 📍 Delivery Tracking & Notifications (Week 4)
+- **Tracking Page** — Dedicated delivery tracking experience
+- **Map Interface** — Simulated pickup, rider, route and delivery points
+- **Rider Information** — Name, phone, vehicle, status and current location
+- **Estimated Delivery** — Simulated ETA displayed on the tracking page
+- **Delivery Timeline** — Pending → Assigned → Accepted → Picked Up → In Transit → Delivered
+- **Notifications** — Navigation bell with notification badge and delivery updates
+- **Search Orders** — Search by Order ID, customer name or rider name
+- **Filters** — Filter orders by status, date and rider
+- **Responsive Tracking** — Tracking interface adapts to mobile, tablet and desktop
 
 ### 📱 Design
 - Fully **responsive** (mobile, tablet, desktop)

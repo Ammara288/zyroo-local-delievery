@@ -1,5 +1,3 @@
-import CreateOrder from "./pages/CreateOrder";
-import EditOrder from "./pages/EditOrder";
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
@@ -14,7 +12,10 @@ import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Orders from "./pages/Orders";
 import OrderDetails from "./pages/OrderDetails";
+import CreateOrder from "./pages/CreateOrder";
+import EditOrder from "./pages/EditOrder";
 import Tracking from "./pages/Tracking";
+import Notifications from "./pages/Notifications";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -50,15 +51,34 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
-  path="/orders/new"
-  element={
-    <ProtectedRoute allowedRoles={["business"]}>
-      <CreateOrder />
-    </ProtectedRoute>
-  }
-/>
-<Route path="/orders/:id/edit" element={<ProtectedRoute allowedRoles={["business"]}><EditOrder /></ProtectedRoute>} />
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/orders/new"
+          element={
+            <ProtectedRoute allowedRoles={["business"]}>
+              <CreateOrder />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/orders/:id/edit"
+          element={
+            <ProtectedRoute allowedRoles={["business"]}>
+              <EditOrder />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/orders"
           element={
@@ -67,6 +87,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/orders/:id"
           element={

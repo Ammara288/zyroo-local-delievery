@@ -7,7 +7,6 @@ import { orders as initialOrders, PRIORITY_OPTIONS, PAYMENT_OPTIONS } from "../d
 export default function CreateOrder() {
   const navigate = useNavigate();
   const { user } = useAuth();
-
   const [form, setForm] = useState({
     customer: "",
     customerPhone: "",
@@ -50,6 +49,7 @@ export default function CreateOrder() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
+
     setLoading(true);
 
     const newOrder = {
@@ -76,8 +76,11 @@ export default function CreateOrder() {
       timeline: [{ status: "Pending", time: new Date().toISOString() }],
     };
 
-    initialOrders.unshift(newOrder);
-    localStorage.setItem("zyroo_orders", JSON.stringify(initialOrders));
+    // Load existing orders from localStorage and add new one
+    const saved = localStorage.getItem("zyroo_orders");
+    const existing = saved ? JSON.parse(saved) : [...initialOrders];
+    existing.unshift(newOrder);
+    localStorage.setItem("zyroo_orders", JSON.stringify(existing));
 
     setTimeout(() => navigate("/orders"), 400);
   };

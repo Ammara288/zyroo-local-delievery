@@ -20,6 +20,11 @@ export const orders = [
     status: "In Transit",
     date: "2026-09-15",
     createdAt: "2026-09-15T08:30:00",
+    riderVehicle: "Motorcycle",
+    riderStatus: "On Delivery",
+    riderAvatar: "H",
+    estimatedDelivery: 25,
+    riderLocation: "Chakdara",
     businessId: "U001",
     businessName: "Khan Traders",
     timeline: [
@@ -46,6 +51,7 @@ export const orders = [
     status: "Delivered",
     date: "2026-09-14",
     createdAt: "2026-09-14T09:00:00",
+    riderVehicle: "Motorcycle", riderStatus: "Available", riderAvatar: "B", estimatedDelivery: 0, riderLocation: "Timergara",
     deliveredAt: "2026-09-14T16:30:00",
     businessId: "U001",
     businessName: "Khan Traders",
@@ -74,6 +80,7 @@ export const orders = [
     status: "Pending",
     date: "2026-09-16",
     createdAt: "2026-09-16T10:15:00",
+    riderVehicle: "", riderStatus: "Awaiting Assignment", riderAvatar: "N", estimatedDelivery: 55, riderLocation: "Mardan",
     businessId: "U001",
     businessName: "Khan Traders",
     timeline: [
@@ -96,6 +103,7 @@ export const orders = [
     status: "In Transit",
     date: "2026-09-15",
     createdAt: "2026-09-15T11:00:00",
+    riderVehicle: "Van", riderStatus: "On Delivery", riderAvatar: "U", estimatedDelivery: 35, riderLocation: "Rawalpindi",
     businessId: "U002",
     businessName: "Ali Enterprises",
     timeline: [
@@ -122,6 +130,7 @@ export const orders = [
     status: "Delivered",
     date: "2026-09-13",
     createdAt: "2026-09-13T08:00:00",
+    riderVehicle: "Motorcycle", riderStatus: "Available", riderAvatar: "K", estimatedDelivery: 0, riderLocation: "Faisalabad",
     deliveredAt: "2026-09-13T15:45:00",
     businessId: "U002",
     businessName: "Ali Enterprises",
@@ -150,6 +159,7 @@ export const orders = [
     status: "Assigned",
     date: "2026-09-16",
     createdAt: "2026-09-16T14:00:00",
+    riderVehicle: "Motorcycle", riderStatus: "Assigned", riderAvatar: "H", estimatedDelivery: 45, riderLocation: "Mardan",
     businessId: "U001",
     businessName: "Khan Traders",
     timeline: [
@@ -173,6 +183,7 @@ export const orders = [
     status: "Pending",
     date: "2026-09-17",
     createdAt: "2026-09-17T09:00:00",
+    riderVehicle: "", riderStatus: "Awaiting Assignment", riderAvatar: "N", estimatedDelivery: 60, riderLocation: "Peshawar",
     businessId: "U002",
     businessName: "Ali Enterprises",
     timeline: [
@@ -195,6 +206,7 @@ export const orders = [
     status: "Picked Up",
     date: "2026-09-16",
     createdAt: "2026-09-16T13:00:00",
+    riderVehicle: "Van", riderStatus: "On Delivery", riderAvatar: "U", estimatedDelivery: 40, riderLocation: "Taxila",
     businessId: "U001",
     businessName: "Khan Traders",
     timeline: [
