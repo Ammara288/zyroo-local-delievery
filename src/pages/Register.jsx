@@ -25,11 +25,12 @@ export default function Register() {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
+    // Validation
     if (!form.name || !form.email || !form.password) {
       setError("Please fill in all required fields");
       setLoading(false);
@@ -48,6 +49,7 @@ export default function Register() {
       return;
     }
 
+    // Build user data
     const userData = {
       name: form.name,
       email: form.email,
@@ -66,7 +68,9 @@ export default function Register() {
       userData.totalDeliveries = 0;
     }
 
-    const result = register(userData);
+    // Call async register
+    const result = await register(userData);
+
     if (result.success) {
       navigate("/dashboard");
     } else {
@@ -116,7 +120,6 @@ export default function Register() {
         </div>
 
         <form onSubmit={handleSubmit} className="authform">
-          {/* Name */}
           <label>
             Full Name *
             <div className="inputwrap">
@@ -131,7 +134,6 @@ export default function Register() {
             </div>
           </label>
 
-          {/* Email */}
           <label>
             Email Address *
             <div className="inputwrap">
@@ -146,7 +148,6 @@ export default function Register() {
             </div>
           </label>
 
-          {/* Phone */}
           <label>
             Phone Number
             <div className="inputwrap">
@@ -161,7 +162,6 @@ export default function Register() {
             </div>
           </label>
 
-          {/* Business-specific: Company */}
           {role === "business" && (
             <label>
               Company Name
@@ -178,7 +178,6 @@ export default function Register() {
             </label>
           )}
 
-          {/* Rider-specific: Vehicle */}
           {role === "rider" && (
             <label>
               Vehicle Type
@@ -195,7 +194,6 @@ export default function Register() {
             </label>
           )}
 
-          {/* Address */}
           <label>
             Address
             <div className="inputwrap">
@@ -210,7 +208,6 @@ export default function Register() {
             </div>
           </label>
 
-          {/* Password */}
           <div className="formrow">
             <label>
               Password *

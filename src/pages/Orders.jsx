@@ -1,73 +1,105 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { orders as initialOrders, ridersList } from "../data/mockData";
 import { useAuth } from "../context/AuthContext";
-import { Plus, X, UserCheck, Package, Truck, CheckCircle, Clock, Search, SlidersHorizontal } from "lucide-react";
+import { useOrders } from "../context/OrdersContext";
+import { getAllRiders } from "../services/riderService";
+import {
+  Plus, X, UserCheck, Package, Truck, CheckCircle, Clock,
+  Search, SlidersHorizontal, RefreshCw, Loader,
+  ChevronLeft, ChevronRight
+} from "lucide-react";
 
 function Orders() {
   const { user } = useAuth();
+  const {
+    orders,
+    loading,
+    error,
+    refreshOrders,
+    cancelOrder,
+    assignRider,
+  } = useOrders();
+
   const [statusFilter, setStatusFilter] = useState("All");
   const [riderFilter, setRiderFilter] = useState("All");
   const [dateFilter, setDateFilter] = useState("");
   const [search, setSearch] = useState("");
-  const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem("zyroo_orders");
-    return saved ? JSON.parse(saved) : [...initialOrders];
-  });
   const [assigningOrder, setAssigningOrder] = useState(null);
   const [cancelConfirm, setCancelConfirm] = useState(null);
+  const [riders, setRiders] = useState([]);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const pageSize = 5; // Orders per page
 
   const isBusiness = user?.role === "business";
   const isRider = user?.role === "rider";
   const isCustomer = user?.role === "customer";
 
-  let roleOrders = orders;
-  if (isRider) {
-    const mine = orders.filter(o => o.rider && o.rider.toLowerCase().includes(user.name.toLowerCase().split(" ")[0]));
-    roleOrders = mine.length ? mine : orders;
-  } else if (isCustomer) {
-    const mine = orders.filter(o => o.customer?.toLowerCase().includes(user.name.toLowerCase().split(" ")[0]));
-    roleOrders = mine.length ? mine : orders;
-  }
+  // Load riders list from API
+  useEffect(() => {
+    const loadRiders = async () => {
+      const result = await getAllRiders();
+      if (result.success) setRiders(result.riders);
+    };
+    loadRiders();
+  }, []);
 
-  const filteredOrders = useMemo(() => roleOrders.filter((o) => {
-    const q = search.trim().toLowerCase();
-    const matchesSearch = !q || [o.id, o.customer, o.rider].some(v => String(v || "").toLowerCase().includes(q));
-    const matchesStatus = statusFilter === "All" || o.status === statusFilter;
-    const matchesRider = riderFilter === "All" || o.rider === riderFilter;
-    const matchesDate = !dateFilter || o.date === dateFilter;
-    return matchesSearch && matchesStatus && matchesRider && matchesDate;
-  }), [roleOrders, search, statusFilter, riderFilter, dateFilter]);
+  // Role-based orders (Context already filters, but extra safety)
+  const roleOrders = orders;
 
+  // Apply filters
+  const filteredOrders = useMemo(() => {
+    return roleOrders.filter((o) => {
+      const q = search.trim().toLowerCase();
+      const matchesSearch =
+        !q ||
+        [o.id, o.customer, o.rider].some((v) =>
+          String(v || "").toLowerCase().includes(q)
+        );
+      const matchesStatus = statusFilter === "All" || o.status === statusFilter;
+      const matchesRider = riderFilter === "All" || o.rider === riderFilter;
+      const matchesDate = !dateFilter || o.date === dateFilter;
+      return matchesSearch && matchesStatus && matchesRider && matchesDate;
+    });
+  }, [roleOrders, search, statusFilter, riderFilter, dateFilter]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredOrders.length / pageSize) || 1;
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedOrders = filteredOrders.slice(startIndex, endIndex);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter, riderFilter, dateFilter]);
+
+  // Stats
   const stats = {
     total: roleOrders.length,
-    pending: roleOrders.filter(o => o.status === "Pending").length,
-    inDelivery: roleOrders.filter(o => ["Assigned","Accepted","Picked Up","In Transit"].includes(o.status)).length,
-    completed: roleOrders.filter(o => o.status === "Delivered").length,
+    pending: roleOrders.filter((o) => o.status === "Pending").length,
+    inDelivery: roleOrders.filter((o) =>
+      ["Assigned", "Accepted", "Picked Up", "In Transit"].includes(o.status)
+    ).length,
+    completed: roleOrders.filter((o) => o.status === "Delivered").length,
   };
 
-  const handleAssignRider = (orderId, rider) => {
-    const updated = orders.map(o => o.id === orderId ? {
-      ...o,
-      rider: rider.name,
-      riderPhone: rider.phone,
-      riderVehicle: rider.vehicle,
-      riderStatus: "Assigned",
-      riderAvatar: rider.name.charAt(0),
-      riderLocation: o.pickup,
-      status: "Assigned",
-      timeline: [...(o.timeline || []), { status: "Assigned", time: new Date().toISOString() }]
-    } : o);
-    setOrders(updated);
-    localStorage.setItem("zyroo_orders", JSON.stringify(updated));
-    setAssigningOrder(null);
+  // Handle assign rider
+  const handleAssignRider = async (orderId, rider) => {
+    setActionLoading(true);
+    const result = await assignRider(orderId, rider);
+    setActionLoading(false);
+    if (result.success) setAssigningOrder(null);
   };
 
-  const handleCancelOrder = (orderId) => {
-    const updated = orders.filter(o => o.id !== orderId);
-    setOrders(updated);
-    localStorage.setItem("zyroo_orders", JSON.stringify(updated));
-    setCancelConfirm(null);
+  // Handle cancel order
+  const handleCancelOrder = async (orderId) => {
+    setActionLoading(true);
+    const result = await cancelOrder(orderId);
+    setActionLoading(false);
+    if (result.success) setCancelConfirm(null);
   };
 
   const clearFilters = () => {
@@ -75,27 +107,56 @@ function Orders() {
     setStatusFilter("All");
     setRiderFilter("All");
     setDateFilter("");
+    setPage(1);
   };
+
+  // Loading state
+  if (loading && orders.length === 0) {
+    return (
+      <div className="orders-page">
+        <div className="loading-state">
+          <Loader className="spin" size={48} />
+          <h2>Loading orders...</h2>
+          <p>Fetching data from server</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="orders-page">
       {/* Header */}
       <div className="orders-head-row">
         <div className="orders-head">
-          <span className="week-badge">WEEK 4 • SEARCH & FILTERS</span>
-          <h1>{isRider ? "🏍️ My Deliveries" : isCustomer ? "👤 My Orders" : "📦 Orders Management"}</h1>
+          <h1>
+            {isRider ? "🏍️ My Deliveries" : isCustomer ? "👤 My Orders" : "📦 Orders Management"}
+          </h1>
           <p>
             {isRider ? "View and manage your assigned deliveries"
               : isCustomer ? "Track your orders in real-time"
               : "Search, filter and manage delivery orders"}
           </p>
         </div>
-        {isBusiness && (
-          <Link to="/orders/new" className="create-order-btn">
-            <Plus size={20} /> Create Order
-          </Link>
-        )}
+        <div className="head-actions">
+          <button className="refresh-btn" onClick={refreshOrders} disabled={loading}>
+            <RefreshCw size={18} className={loading ? "spin" : ""} />
+            Refresh
+          </button>
+          {isBusiness && (
+            <Link to="/orders/new" className="create-order-btn">
+              <Plus size={20} /> Create Order
+            </Link>
+          )}
+        </div>
       </div>
+
+      {/* Error state */}
+      {error && (
+        <div className="error-banner">
+          <span>⚠️ {error}</span>
+          <button onClick={refreshOrders}>Retry</button>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="orders-stats">
@@ -123,29 +184,29 @@ function Orders() {
           <Search size={18}/>
           <input
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by Order ID, Customer or Rider..."
           />
         </div>
         <div className="filter-selects">
           <label>
             Status
-            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-              {["All","Pending","Assigned","Accepted","Picked Up","In Transit","Delivered"].map(x => (
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+              {["All", "Pending", "Assigned", "Accepted", "Picked Up", "In Transit", "Delivered"].map((x) => (
                 <option key={x}>{x}</option>
               ))}
             </select>
           </label>
           <label>
             Rider
-            <select value={riderFilter} onChange={e => setRiderFilter(e.target.value)}>
+            <select value={riderFilter} onChange={(e) => setRiderFilter(e.target.value)}>
               <option>All</option>
-              {ridersList.map(r => <option key={r.id}>{r.name}</option>)}
+              {riders.map((r) => <option key={r.id}>{r.name}</option>)}
             </select>
           </label>
           <label>
             Date
-            <input type="date" value={dateFilter} onChange={e => setDateFilter(e.target.value)}/>
+            <input type="date" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} />
           </label>
           <button className="clear-filter-btn" onClick={clearFilters}>
             <X size={16}/> Clear
@@ -158,18 +219,21 @@ function Orders() {
         <span>
           <SlidersHorizontal size={15}/> Showing <b>{filteredOrders.length}</b> of {roleOrders.length} orders
         </span>
+        <span className="page-indicator">
+          Page <b>{page}</b> of {totalPages}
+        </span>
       </div>
 
       {/* Orders Grid */}
       <div className="orders-grid">
-        {filteredOrders.map((order) => (
+        {paginatedOrders.map((order) => (
           <div className="order-card" key={order.id}>
             <div className="order-card-top">
               <div>
                 <span className="order-id">#{order.id}</span>
                 <span className="order-date">{order.date}</span>
               </div>
-              <span className={`order-status status-${order.status.toLowerCase().replaceAll(" ","-")}`}>
+              <span className={`order-status status-${order.status.toLowerCase().replaceAll(" ", "-")}`}>
                 {order.status}
               </span>
             </div>
@@ -186,7 +250,9 @@ function Orders() {
             </div>
 
             <div className="order-card-actions">
-              <Link to={`/orders/${order.id}`} className="view-order-btn">View Details</Link>
+              <Link to={`/orders/${order.id}`} className="view-order-btn">
+                View Details
+              </Link>
               <Link to={`/tracking/${order.id}`} className="track-order-btn">
                 <Truck size={15}/> Track
               </Link>
@@ -195,7 +261,7 @@ function Orders() {
                   <UserCheck size={15}/> Assign
                 </button>
               )}
-              {isBusiness && (
+              {isBusiness && order.status !== "Delivered" && (
                 <button className="cancel-order-btn" onClick={() => setCancelConfirm(order)}>
                   Cancel
                 </button>
@@ -205,8 +271,41 @@ function Orders() {
         ))}
       </div>
 
+      {/* Pagination Controls */}
+      {filteredOrders.length > 0 && totalPages > 1 && (
+        <div className="pagination-controls">
+          <button
+            className="page-btn"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            <ChevronLeft size={16} /> Previous
+          </button>
+
+          <div className="page-numbers">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                className={`page-num ${page === p ? "active" : ""}`}
+                onClick={() => setPage(p)}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="page-btn"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            Next <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
+
       {/* Empty State */}
-      {!filteredOrders.length && (
+      {!filteredOrders.length && !loading && (
         <div className="orders-empty">
           <Search size={36}/>
           <h3>No orders found</h3>
@@ -217,18 +316,23 @@ function Orders() {
 
       {/* Assign Rider Modal */}
       {assigningOrder && (
-        <div className="modal-overlay" onClick={() => setAssigningOrder(null)}>
+        <div className="modal-overlay" onClick={() => !actionLoading && setAssigningOrder(null)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <div className="modal-head">
               <h3>🏍️ Assign Rider</h3>
-              <button onClick={() => setAssigningOrder(null)}><X/></button>
+              <button onClick={() => setAssigningOrder(null)} disabled={actionLoading}><X/></button>
             </div>
             <p className="modal-sub">
               Select a rider for <b>#{assigningOrder.id}</b>
             </p>
             <div className="rider-list">
-              {ridersList.map(r => (
-                <button key={r.id} className="rider-option" onClick={() => handleAssignRider(assigningOrder.id, r)}>
+              {riders.map((r) => (
+                <button
+                  key={r.id}
+                  className="rider-option"
+                  onClick={() => handleAssignRider(assigningOrder.id, r)}
+                  disabled={actionLoading}
+                >
                   <span className="rider-avatar">{r.name.charAt(0)}</span>
                   <div className="rider-info">
                     <b>{r.name}</b>
@@ -238,27 +342,28 @@ function Orders() {
                 </button>
               ))}
             </div>
+            {actionLoading && <p className="modal-loading">Assigning rider...</p>}
           </div>
         </div>
       )}
 
       {/* Cancel Confirm Modal */}
       {cancelConfirm && (
-        <div className="modal-overlay" onClick={() => setCancelConfirm(null)}>
+        <div className="modal-overlay" onClick={() => !actionLoading && setCancelConfirm(null)}>
           <div className="modal-box modal-small" onClick={(e) => e.stopPropagation()}>
             <div className="modal-head">
               <h3>⚠️ Cancel Order?</h3>
-              <button onClick={() => setCancelConfirm(null)}><X/></button>
+              <button onClick={() => setCancelConfirm(null)} disabled={actionLoading}><X/></button>
             </div>
             <p className="modal-sub">
               Are you sure you want to cancel <b>#{cancelConfirm.id}</b>? This action cannot be undone.
             </p>
             <div className="modal-actions">
-              <button className="modal-btn-outline" onClick={() => setCancelConfirm(null)}>
+              <button className="modal-btn-outline" onClick={() => setCancelConfirm(null)} disabled={actionLoading}>
                 Keep Order
               </button>
-              <button className="modal-btn-danger" onClick={() => handleCancelOrder(cancelConfirm.id)}>
-                Cancel Order
+              <button className="modal-btn-danger" onClick={() => handleCancelOrder(cancelConfirm.id)} disabled={actionLoading}>
+                {actionLoading ? "Cancelling..." : "Cancel Order"}
               </button>
             </div>
           </div>

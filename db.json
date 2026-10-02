@@ -1,0 +1,439 @@
+{
+  "users": [
+    {
+      "id": "U001",
+      "name": "Ahmed Khan",
+      "email": "business@zyroo.com",
+      "password": "business123",
+      "role": "business",
+      "phone": "+92 300 1234567",
+      "company": "Khan Traders",
+      "address": "Mardan, KPK",
+      "avatar": "AK"
+    },
+    {
+      "id": "U002",
+      "name": "Hamza Khan",
+      "email": "rider@zyroo.com",
+      "password": "rider123",
+      "role": "rider",
+      "phone": "+92 302 3456789",
+      "vehicle": "Motorcycle",
+      "vehicleNumber": "KHI-1234",
+      "rating": 4.8,
+      "avatar": "HK"
+    },
+    {
+      "id": "U003",
+      "name": "Ali Khan",
+      "email": "customer@zyroo.com",
+      "password": "customer123",
+      "role": "customer",
+      "phone": "+92 305 6789012",
+      "address": "Timergara, KPK",
+      "avatar": "AK"
+    },
+    {
+      "id": "U004",
+      "name": "Bilal Ahmed",
+      "email": "bilal@rider.com",
+      "password": "rider123",
+      "role": "rider",
+      "phone": "+92 303 4567890",
+      "vehicle": "Motorcycle",
+      "vehicleNumber": "KHI-5678",
+      "rating": 4.6,
+      "avatar": "BA"
+    },
+    {
+      "id": "U005",
+      "name": "Usman Malik",
+      "email": "usman@rider.com",
+      "password": "rider123",
+      "role": "rider",
+      "phone": "+92 304 5678901",
+      "vehicle": "Van",
+      "vehicleNumber": "KHI-9012",
+      "rating": 4.9,
+      "avatar": "UM"
+    },
+    {
+      "id": "4B9DKKgtCsc",
+      "name": "Ammara Batool",
+      "email": "ammarabatool376@gmail.com",
+      "password": "tyuioplk",
+      "phone": "+923090569981",
+      "address": "Model Town B block  Lahore",
+      "role": "customer",
+      "avatar": "AB",
+      "createdAt": "2026-10-02T08:31:12.641Z"
+    }
+  ],
+  "riders": [
+    {
+      "id": "R001",
+      "name": "Hamza",
+      "phone": "+92 302 3456789",
+      "vehicle": "Motorcycle",
+      "rating": 4.8,
+      "active": true
+    },
+    {
+      "id": "R002",
+      "name": "Bilal",
+      "phone": "+92 303 4567890",
+      "vehicle": "Motorcycle",
+      "rating": 4.6,
+      "active": true
+    },
+    {
+      "id": "R003",
+      "name": "Usman",
+      "phone": "+92 304 5678901",
+      "vehicle": "Van",
+      "rating": 4.9,
+      "active": true
+    },
+    {
+      "id": "R004",
+      "name": "Kashif",
+      "phone": "+92 306 6667777",
+      "vehicle": "Motorcycle",
+      "rating": 4.7,
+      "active": true
+    }
+  ],
+  "orders": [
+    {
+      "id": "DL001",
+      "customer": "Ali Khan",
+      "customerPhone": "+92 300 1234567",
+      "pickup": "Mardan",
+      "pickupAddress": "Shop 12, Nisatta Road, Mardan",
+      "delivery": "Timergara",
+      "deliveryAddress": "House 45, Main Bazaar, Timergara",
+      "packageDetails": "Small box - Tractor spare parts",
+      "priority": "High",
+      "paymentMethod": "Cash on Delivery",
+      "rider": "Hamza",
+      "riderPhone": "+92 302 3456789",
+      "status": "In Transit",
+      "date": "2026-09-15",
+      "createdAt": "2026-09-15T08:30:00",
+      "businessId": "U001",
+      "businessName": "Khan Traders",
+      "timeline": [
+        {
+          "status": "Pending",
+          "time": "2026-09-15T08:30:00"
+        },
+        {
+          "status": "Assigned",
+          "time": "2026-09-15T09:15:00"
+        },
+        {
+          "status": "Accepted",
+          "time": "2026-09-15T09:30:00"
+        },
+        {
+          "status": "Picked Up",
+          "time": "2026-09-15T10:00:00"
+        },
+        {
+          "status": "In Transit",
+          "time": "2026-09-15T10:45:00"
+        }
+      ]
+    },
+    {
+      "id": "DL002",
+      "customer": "Ahmed Raza",
+      "customerPhone": "+92 301 9876543",
+      "pickup": "Peshawar",
+      "pickupAddress": "Shop 88, Karkhano Market, Peshawar",
+      "delivery": "Swat",
+      "deliveryAddress": "Street 7, Mingora Bazaar, Swat",
+      "packageDetails": "Medium box - Tractor parts",
+      "priority": "Normal",
+      "paymentMethod": "Bank Transfer",
+      "rider": "Bilal",
+      "riderPhone": "+92 303 4567890",
+      "status": "Delivered",
+      "date": "2026-09-14",
+      "createdAt": "2026-09-14T09:00:00",
+      "businessId": "U001",
+      "businessName": "Khan Traders",
+      "timeline": [
+        {
+          "status": "Pending",
+          "time": "2026-09-14T09:00:00"
+        },
+        {
+          "status": "Assigned",
+          "time": "2026-09-14T09:30:00"
+        },
+        {
+          "status": "Accepted",
+          "time": "2026-09-14T09:45:00"
+        },
+        {
+          "status": "Picked Up",
+          "time": "2026-09-14T10:30:00"
+        },
+        {
+          "status": "In Transit",
+          "time": "2026-09-14T11:00:00"
+        },
+        {
+          "status": "Delivered",
+          "time": "2026-09-14T16:30:00"
+        }
+      ]
+    },
+    {
+      "id": "DL003",
+      "customer": "Sara Ahmed",
+      "customerPhone": "+92 302 5551234",
+      "pickup": "Mardan",
+      "pickupAddress": "Main Bazaar, Mardan",
+      "delivery": "Nowshera",
+      "deliveryAddress": "Cantt Area, Nowshera",
+      "packageDetails": "Large box - Tractor Radiator",
+      "priority": "Low",
+      "paymentMethod": "Cash on Delivery",
+      "rider": "Not Assigned",
+      "riderPhone": "",
+      "status": "Pending",
+      "date": "2026-09-16",
+      "createdAt": "2026-09-16T10:15:00",
+      "businessId": "U001",
+      "businessName": "Khan Traders",
+      "timeline": [
+        {
+          "status": "Pending",
+          "time": "2026-09-16T10:15:00"
+        }
+      ]
+    },
+    {
+      "id": "DL004",
+      "customer": "Fatima Bibi",
+      "customerPhone": "+92 304 7778899",
+      "pickup": "Islamabad",
+      "pickupAddress": "Blue Area, Islamabad",
+      "delivery": "Rawalpindi",
+      "deliveryAddress": "Saddar Bazaar, Rawalpindi",
+      "packageDetails": "Medium box - Engine Filter",
+      "priority": "High",
+      "paymentMethod": "Online Payment",
+      "rider": "Usman",
+      "riderPhone": "+92 304 5678901",
+      "status": "In Transit",
+      "date": "2026-09-15",
+      "createdAt": "2026-09-15T11:00:00",
+      "businessId": "U001",
+      "businessName": "Khan Traders",
+      "timeline": [
+        {
+          "status": "Pending",
+          "time": "2026-09-15T11:00:00"
+        },
+        {
+          "status": "Assigned",
+          "time": "2026-09-15T11:30:00"
+        },
+        {
+          "status": "Accepted",
+          "time": "2026-09-15T12:00:00"
+        },
+        {
+          "status": "Picked Up",
+          "time": "2026-09-15T13:00:00"
+        },
+        {
+          "status": "In Transit",
+          "time": "2026-09-15T13:30:00"
+        }
+      ]
+    },
+    {
+      "id": "DL005",
+      "customer": "Bilal Ahmed",
+      "customerPhone": "+92 305 3334444",
+      "pickup": "Lahore",
+      "pickupAddress": "Liberty Market, Lahore",
+      "delivery": "Faisalabad",
+      "deliveryAddress": "Clock Tower, Faisalabad",
+      "packageDetails": "Small box - Alternator",
+      "priority": "Normal",
+      "paymentMethod": "Cash on Delivery",
+      "rider": "Kashif",
+      "riderPhone": "+92 306 6667777",
+      "status": "Delivered",
+      "date": "2026-09-13",
+      "createdAt": "2026-09-13T08:00:00",
+      "businessId": "U001",
+      "businessName": "Khan Traders",
+      "timeline": [
+        {
+          "status": "Pending",
+          "time": "2026-09-13T08:00:00"
+        },
+        {
+          "status": "Assigned",
+          "time": "2026-09-13T08:30:00"
+        },
+        {
+          "status": "Accepted",
+          "time": "2026-09-13T09:00:00"
+        },
+        {
+          "status": "Picked Up",
+          "time": "2026-09-13T10:00:00"
+        },
+        {
+          "status": "In Transit",
+          "time": "2026-09-13T10:30:00"
+        },
+        {
+          "status": "Delivered",
+          "time": "2026-09-13T15:45:00"
+        }
+      ]
+    },
+    {
+      "id": "DL006",
+      "customer": "Hassan Ali",
+      "customerPhone": "+92 307 1112222",
+      "pickup": "Mardan",
+      "pickupAddress": "Par Hoti, Mardan",
+      "delivery": "Swabi",
+      "deliveryAddress": "Main Road, Swabi",
+      "packageDetails": "Small box - Brake Shoes",
+      "priority": "Normal",
+      "paymentMethod": "Cash on Delivery",
+      "rider": "Hamza",
+      "riderPhone": "+92 302 3456789",
+      "status": "Assigned",
+      "date": "2026-09-16",
+      "createdAt": "2026-09-16T14:00:00",
+      "businessId": "U001",
+      "businessName": "Khan Traders",
+      "timeline": [
+        {
+          "status": "Pending",
+          "time": "2026-09-16T14:00:00"
+        },
+        {
+          "status": "Assigned",
+          "time": "2026-09-16T14:30:00"
+        }
+      ]
+    },
+    {
+      "id": "DL007",
+      "customer": "Nadia Khan",
+      "customerPhone": "+92 308 8889999",
+      "pickup": "Peshawar",
+      "pickupAddress": "University Road, Peshawar",
+      "delivery": "Charsadda",
+      "deliveryAddress": "Main Bazaar, Charsadda",
+      "packageDetails": "Medium box - Steering Gear",
+      "priority": "High",
+      "paymentMethod": "Online Payment",
+      "rider": "Not Assigned",
+      "riderPhone": "",
+      "status": "Pending",
+      "date": "2026-09-17",
+      "createdAt": "2026-09-17T09:00:00",
+      "businessId": "U001",
+      "businessName": "Khan Traders",
+      "timeline": [
+        {
+          "status": "Pending",
+          "time": "2026-09-17T09:00:00"
+        }
+      ]
+    },
+    {
+      "id": "DL008",
+      "customer": "Imran Shah",
+      "customerPhone": "+92 309 4445555",
+      "pickup": "Islamabad",
+      "pickupAddress": "G-11 Markaz, Islamabad",
+      "delivery": "Taxila",
+      "deliveryAddress": "Wah Cantt Road, Taxila",
+      "packageDetails": "Large box - Water Pump",
+      "priority": "Normal",
+      "paymentMethod": "Cash on Delivery",
+      "rider": "Usman",
+      "riderPhone": "+92 304 5678901",
+      "status": "Picked Up",
+      "date": "2026-09-16",
+      "createdAt": "2026-09-16T13:00:00",
+      "businessId": "U001",
+      "businessName": "Khan Traders",
+      "timeline": [
+        {
+          "status": "Pending",
+          "time": "2026-09-16T13:00:00"
+        },
+        {
+          "status": "Assigned",
+          "time": "2026-09-16T13:30:00"
+        },
+        {
+          "status": "Accepted",
+          "time": "2026-09-16T14:00:00"
+        },
+        {
+          "status": "Picked Up",
+          "time": "2026-09-16T15:00:00"
+        }
+      ]
+    }
+  ],
+  "notifications": [
+    {
+      "id": "N001",
+      "userId": "U001",
+      "title": "Rider Assigned",
+      "message": "Hamza has been assigned to order DL001",
+      "type": "info",
+      "read": false,
+      "createdAt": "2026-09-15T09:15:00",
+      "orderId": "DL001"
+    },
+    {
+      "id": "N002",
+      "userId": "U001",
+      "title": "Delivery Accepted",
+      "message": "Hamza accepted order DL001",
+      "type": "success",
+      "read": false,
+      "createdAt": "2026-09-15T09:30:00",
+      "orderId": "DL001"
+    },
+    {
+      "id": "N003",
+      "userId": "U001",
+      "title": "Order Picked Up",
+      "message": "Order DL001 has been picked up",
+      "type": "info",
+      "read": true,
+      "createdAt": "2026-09-15T10:00:00",
+      "orderId": "DL001"
+    },
+    {
+      "id": "N004",
+      "userId": "U001",
+      "title": "Delivery Completed",
+      "message": "Order DL002 has been delivered successfully",
+      "type": "success",
+      "read": true,
+      "createdAt": "2026-09-14T16:30:00",
+      "orderId": "DL002"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

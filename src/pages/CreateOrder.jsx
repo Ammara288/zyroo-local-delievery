@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Phone, MapPin, Package, AlertCircle, Save, ArrowLeft, CreditCard, Weight, Clock, FileText, CheckCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { orders as initialOrders, PRIORITY_OPTIONS, PAYMENT_OPTIONS } from "../data/mockData";
+import { useOrders } from "../context/OrdersContext";
+import { PRIORITY_OPTIONS, PAYMENT_OPTIONS } from "../data/mockData";
 
 export default function CreateOrder() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { createOrder, orders } = useOrders();
+
   const [form, setForm] = useState({
     customer: "",
     customerPhone: "",
@@ -29,9 +32,8 @@ export default function CreateOrder() {
     }
   };
 
-  // Form completion percentage
   const requiredFields = ["customer", "customerPhone", "pickupAddress", "deliveryAddress", "packageDetails"];
-  const filledFields = requiredFields.filter(f => form[f]?.trim()).length;
+  const filledFields = requiredFields.filter((f) => form[f]?.trim()).length;
   const progress = Math.round((filledFields / requiredFields.length) * 100);
 
   const validate = () => {
@@ -46,14 +48,14 @@ export default function CreateOrder() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setLoading(true);
 
     const newOrder = {
-      id: `DL${String(initialOrders.length + 1).padStart(3, "0")}`,
+      id: `DL${String(orders.length + 1).padStart(3, "0")}`,
       customer: form.customer,
       customerPhone: form.customerPhone,
       pickup: form.pickupAddress.split(",")[0] || form.pickupAddress,
@@ -70,24 +72,22 @@ export default function CreateOrder() {
       riderPhone: "",
       status: "Pending",
       date: new Date().toISOString().split("T")[0],
-      createdAt: new Date().toISOString(),
       businessId: user?.id || "U001",
       businessName: user?.company || user?.name || "Business",
-      timeline: [{ status: "Pending", time: new Date().toISOString() }],
     };
 
-    // Load existing orders from localStorage and add new one
-    const saved = localStorage.getItem("zyroo_orders");
-    const existing = saved ? JSON.parse(saved) : [...initialOrders];
-    existing.unshift(newOrder);
-    localStorage.setItem("zyroo_orders", JSON.stringify(existing));
+    const result = await createOrder(newOrder);
 
-    setTimeout(() => navigate("/orders"), 400);
+    if (result.success) {
+      setTimeout(() => navigate("/orders"), 300);
+    } else {
+      setErrors({ submit: result.error });
+      setLoading(false);
+    }
   };
 
   return (
     <div className="createorder-page">
-      {/* Header */}
       <div className="createorder-head">
         <button className="back-btn" onClick={() => navigate("/orders")}>
           <ArrowLeft size={18} /> Back to Orders
@@ -96,7 +96,6 @@ export default function CreateOrder() {
         <p>Fill in the delivery details below. Fields marked with * are required.</p>
       </div>
 
-      {/* Progress Bar */}
       <div className="progress-wrap">
         <div className="progress-info">
           <span>Form Progress</span>
@@ -107,8 +106,13 @@ export default function CreateOrder() {
         </div>
       </div>
 
+      {errors.submit && (
+        <div className="autherror">
+          <AlertCircle size={18} /><span>{errors.submit}</span>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="createorder-form" noValidate>
-        {/* Customer Section */}
         <div className="form-section">
           <div className="form-section-head">
             <span className="form-section-icon">👤</span>
@@ -123,13 +127,7 @@ export default function CreateOrder() {
               Customer Name *
               <div className={`inputwrap ${errors.customer ? "input-error" : ""}`}>
                 <User size={18} />
-                <input
-                  type="text"
-                  name="customer"
-                  value={form.customer}
-                  onChange={handleChange}
-                  placeholder="Ali Khan"
-                />
+                <input type="text" name="customer" value={form.customer} onChange={handleChange} placeholder="Ali Khan" />
                 {form.customer && <CheckCircle size={16} className="input-check" />}
               </div>
               {errors.customer && <span className="error-text">{errors.customer}</span>}
@@ -139,13 +137,7 @@ export default function CreateOrder() {
               Customer Phone *
               <div className={`inputwrap ${errors.customerPhone ? "input-error" : ""}`}>
                 <Phone size={18} />
-                <input
-                  type="tel"
-                  name="customerPhone"
-                  value={form.customerPhone}
-                  onChange={handleChange}
-                  placeholder="+92 300 1234567"
-                />
+                <input type="tel" name="customerPhone" value={form.customerPhone} onChange={handleChange} placeholder="+92 300 1234567" />
                 {form.customerPhone && <CheckCircle size={16} className="input-check" />}
               </div>
               {errors.customerPhone && <span className="error-text">{errors.customerPhone}</span>}
@@ -153,7 +145,6 @@ export default function CreateOrder() {
           </div>
         </div>
 
-        {/* Pickup & Delivery */}
         <div className="form-section">
           <div className="form-section-head">
             <span className="form-section-icon">📍</span>
@@ -167,13 +158,7 @@ export default function CreateOrder() {
             Pickup Address *
             <div className={`inputwrap ${errors.pickupAddress ? "input-error" : ""}`}>
               <MapPin size={18} />
-              <input
-                type="text"
-                name="pickupAddress"
-                value={form.pickupAddress}
-                onChange={handleChange}
-                placeholder="Shop 12, Nisatta Road, Mardan"
-              />
+              <input type="text" name="pickupAddress" value={form.pickupAddress} onChange={handleChange} placeholder="Shop 12, Nisatta Road, Mardan" />
               {form.pickupAddress && <CheckCircle size={16} className="input-check" />}
             </div>
             {errors.pickupAddress && <span className="error-text">{errors.pickupAddress}</span>}
@@ -183,20 +168,13 @@ export default function CreateOrder() {
             Delivery Address *
             <div className={`inputwrap ${errors.deliveryAddress ? "input-error" : ""}`}>
               <MapPin size={18} />
-              <input
-                type="text"
-                name="deliveryAddress"
-                value={form.deliveryAddress}
-                onChange={handleChange}
-                placeholder="House 45, Main Bazaar, Timergara"
-              />
+              <input type="text" name="deliveryAddress" value={form.deliveryAddress} onChange={handleChange} placeholder="House 45, Main Bazaar, Timergara" />
               {form.deliveryAddress && <CheckCircle size={16} className="input-check" />}
             </div>
             {errors.deliveryAddress && <span className="error-text">{errors.deliveryAddress}</span>}
           </label>
         </div>
 
-        {/* Package Details */}
         <div className="form-section">
           <div className="form-section-head">
             <span className="form-section-icon">📦</span>
@@ -210,13 +188,7 @@ export default function CreateOrder() {
             Package Description *
             <div className={`inputwrap textarea-wrap ${errors.packageDetails ? "input-error" : ""}`}>
               <Package size={18} />
-              <textarea
-                name="packageDetails"
-                value={form.packageDetails}
-                onChange={handleChange}
-                placeholder="Small box - Tractor spare parts (Hydraulic Pump)"
-                rows={3}
-              />
+              <textarea name="packageDetails" value={form.packageDetails} onChange={handleChange} placeholder="Small box - Tractor spare parts (Hydraulic Pump)" rows={3} />
             </div>
             {errors.packageDetails && <span className="error-text">{errors.packageDetails}</span>}
           </label>
@@ -226,13 +198,7 @@ export default function CreateOrder() {
               Package Weight (kg)
               <div className="inputwrap">
                 <Weight size={18} />
-                <input
-                  type="text"
-                  name="packageWeight"
-                  value={form.packageWeight}
-                  onChange={handleChange}
-                  placeholder="e.g. 5"
-                />
+                <input type="text" name="packageWeight" value={form.packageWeight} onChange={handleChange} placeholder="e.g. 5" />
               </div>
             </label>
 
@@ -254,18 +220,11 @@ export default function CreateOrder() {
             Special Instructions
             <div className="inputwrap textarea-wrap">
               <FileText size={18} />
-              <textarea
-                name="specialInstructions"
-                value={form.specialInstructions}
-                onChange={handleChange}
-                placeholder="Any special handling or delivery notes..."
-                rows={2}
-              />
+              <textarea name="specialInstructions" value={form.specialInstructions} onChange={handleChange} placeholder="Any special handling or delivery notes..." rows={2} />
             </div>
           </label>
         </div>
 
-        {/* Delivery Options */}
         <div className="form-section">
           <div className="form-section-head">
             <span className="form-section-icon">⚙️</span>
@@ -281,7 +240,7 @@ export default function CreateOrder() {
               <div className="inputwrap">
                 <AlertCircle size={18} />
                 <select name="priority" value={form.priority} onChange={handleChange}>
-                  {PRIORITY_OPTIONS.map(p => <option key={p}>{p}</option>)}
+                  {PRIORITY_OPTIONS.map((p) => <option key={p}>{p}</option>)}
                 </select>
               </div>
             </label>
@@ -291,14 +250,13 @@ export default function CreateOrder() {
               <div className="inputwrap">
                 <CreditCard size={18} />
                 <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
-                  {PAYMENT_OPTIONS.map(p => <option key={p}>{p}</option>)}
+                  {PAYMENT_OPTIONS.map((p) => <option key={p}>{p}</option>)}
                 </select>
               </div>
             </label>
           </div>
         </div>
 
-        {/* Submit */}
         <button type="submit" className="authbtn" disabled={loading}>
           <Save size={18} />
           {loading ? "Creating Order..." : "Create Order"}

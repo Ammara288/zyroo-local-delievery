@@ -1,55 +1,58 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { orders as mockOrders } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
-import { CheckCircle, Truck, Package, Home, AlertCircle, Phone, MapPin, User, Calendar, CreditCard, Clock } from 'lucide-react';
+import { useOrders } from '../context/OrdersContext';
+import { CheckCircle, Truck, Package, Home, AlertCircle } from 'lucide-react';
 
 function OrderDetails() {
   const { id } = useParams();
   const { user } = useAuth();
-  const [refresh, setRefresh] = useState(0);
+  const { orders, loading, updateStatus } = useOrders();
+  const [actionLoading, setActionLoading] = useState(false);
 
-  const savedOrders = localStorage.getItem('zyroo_orders');
-  const orders = savedOrders ? JSON.parse(savedOrders) : mockOrders;
+  const order = orders.find((o) => o.id === id);
 
-  const order = orders.find(o => o.id === id);
-
-  if (!order) return (
-    <div className="detail-page">
-      <div className="detail-empty">
-        <h2>Order not found</h2>
-        <Link to="/orders" className="detail-back">← Back to Orders</Link>
+  if (loading && !order) {
+    return (
+      <div className="detail-page">
+        <div className="detail-empty">
+          <h2>Loading order...</h2>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="detail-page">
+        <div className="detail-empty">
+          <h2>Order not found</h2>
+          <Link to="/orders" className="detail-back">← Back to Orders</Link>
+        </div>
+      </div>
+    );
+  }
 
   const isRider = user?.role === 'rider';
-  const isAssignedRider = isRider && order.rider && order.rider.toLowerCase().includes(user.name.toLowerCase().split(' ')[0]);
+  const isAssignedRider =
+    isRider &&
+    order.rider &&
+    order.rider.toLowerCase().includes(user.name.toLowerCase().split(' ')[0]);
 
   // Timeline steps
   const timelineSteps = [
     { label: 'Created', done: true, icon: '📝' },
-    { label: 'Assigned', done: order.timeline?.some(t => t.status === 'Assigned') || order.rider !== 'Not Assigned', icon: '👤' },
-    { label: 'Accepted', done: order.timeline?.some(t => t.status === 'Accepted') || ['Accepted','Picked Up','In Transit','Delivered'].includes(order.status), icon: '✓' },
-    { label: 'Picked Up', done: order.timeline?.some(t => t.status === 'Picked Up') || ['Picked Up','In Transit','Delivered'].includes(order.status), icon: '📦' },
-    { label: 'In Transit', done: order.timeline?.some(t => t.status === 'In Transit') || ['In Transit','Delivered'].includes(order.status), icon: '🚚' },
+    { label: 'Assigned', done: order.timeline?.some((t) => t.status === 'Assigned') || order.rider !== 'Not Assigned', icon: '👤' },
+    { label: 'Accepted', done: order.timeline?.some((t) => t.status === 'Accepted') || ['Accepted', 'Picked Up', 'In Transit', 'Delivered'].includes(order.status), icon: '✓' },
+    { label: 'Picked Up', done: order.timeline?.some((t) => t.status === 'Picked Up') || ['Picked Up', 'In Transit', 'Delivered'].includes(order.status), icon: '📦' },
+    { label: 'In Transit', done: order.timeline?.some((t) => t.status === 'In Transit') || ['In Transit', 'Delivered'].includes(order.status), icon: '🚚' },
     { label: 'Delivered', done: order.status === 'Delivered', icon: '🏠' },
   ];
 
-  const updateStatus = (newStatus) => {
-    const updated = orders.map(o => {
-      if (o.id === order.id) {
-        return {
-          ...o,
-          status: newStatus,
-          timeline: [...(o.timeline || []), { status: newStatus, time: new Date().toISOString() }],
-          ...(newStatus === 'Delivered' ? { deliveredAt: new Date().toISOString() } : {}),
-        };
-      }
-      return o;
-    });
-    localStorage.setItem('zyroo_orders', JSON.stringify(updated));
-    setRefresh(refresh + 1);
+  const handleStatusUpdate = async (newStatus) => {
+    setActionLoading(true);
+    await updateStatus(order.id, newStatus);
+    setActionLoading(false);
   };
 
   const getRiderAction = () => {
@@ -72,21 +75,16 @@ function OrderDetails() {
 
   return (
     <div className="detail-page">
-      {/* Back Link */}
       <Link to="/orders" className="detail-back">← Back to Orders</Link>
 
-      {/* Header */}
       <div className="detail-header">
         <div>
           <p className="detail-header-label">ORDER ID</p>
           <h1 className="detail-header-id">#{order.id}</h1>
         </div>
-        <div className="detail-header-status">
-          {order.status}
-        </div>
+        <div className="detail-header-status">{order.status}</div>
       </div>
 
-      {/* Rider Action Panel */}
       {riderAction && (
         <div className="rider-action-panel">
           <div className="rider-action-info">
@@ -98,15 +96,15 @@ function OrderDetails() {
           </div>
           <button
             className="rider-action-btn"
-            onClick={() => updateStatus(riderAction.next)}
+            onClick={() => handleStatusUpdate(riderAction.next)}
+            disabled={actionLoading}
           >
             {riderAction.icon}
-            {riderAction.label}
+            {actionLoading ? 'Updating...' : riderAction.label}
           </button>
         </div>
       )}
 
-      {/* Rider Warnings */}
       {isRider && !isAssignedRider && order.rider !== 'Not Assigned' && (
         <div className="rider-warning">
           <AlertCircle size={18} />
@@ -120,7 +118,6 @@ function OrderDetails() {
         </div>
       )}
 
-      {/* Info Cards */}
       <div className="detail-info-grid">
         <InfoCard icon="👤" label="Customer" value={order.customer} />
         <InfoCard icon="🏍️" label="Rider" value={order.rider || 'Not Assigned'} />
@@ -128,7 +125,6 @@ function OrderDetails() {
         <InfoCard icon="🎯" label="Delivery" value={order.delivery} />
       </div>
 
-      {/* Package & Order Info */}
       <div className="detail-timeline">
         <h2>📦 Package & Order Info</h2>
         <div className="detail-extrainfo">
@@ -142,7 +138,6 @@ function OrderDetails() {
         </div>
       </div>
 
-      {/* Timeline Visual */}
       <div className="detail-timeline">
         <h2>🕐 Delivery Timeline</h2>
         <div className="timeline-steps">
@@ -159,7 +154,6 @@ function OrderDetails() {
         </div>
       </div>
 
-      {/* Timeline History */}
       {order.timeline && order.timeline.length > 1 && (
         <div className="detail-timeline">
           <h2>📋 Status History</h2>
@@ -172,7 +166,7 @@ function OrderDetails() {
                   <small>
                     {new Date(entry.time).toLocaleString('en-PK', {
                       dateStyle: 'medium',
-                      timeStyle: 'short'
+                      timeStyle: 'short',
                     })}
                   </small>
                 </div>
@@ -182,7 +176,6 @@ function OrderDetails() {
         </div>
       )}
 
-      {/* Track Button */}
       <Link to={`/tracking/${order.id}`} className="detail-track-btn">
         📍 Track this Delivery
       </Link>

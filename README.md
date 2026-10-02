@@ -1,6 +1,6 @@
-# 🚚 Zyroo Local Delivery - Frontend MVP
+# 🚚 Zyroo Local Delivery - Advanced Platform (Week 5)
 
-A modern, role-based Local Delivery & Logistics Management Platform built with React. This project demonstrates a complete delivery workflow for Business owners, Riders, and Customers — with real-time map tracking, notifications, and a polished production-ready UI.
+A modern, **API-driven** Local Delivery & Logistics Management Platform built with React. Features role-based dashboards for Business, Riders, and Customers with real-time updates, advanced state management, and a production-ready UI.
 
 ---
 
@@ -10,9 +10,10 @@ A modern, role-based Local Delivery & Logistics Management Platform built with R
 - [Live Demo](#-live-demo)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
+- [Architecture](#-architecture)
 - [Setup Instructions](#-setup-instructions)
 - [Demo Accounts](#-demo-accounts)
+- [API Endpoints](#-api-endpoints)
 - [Screenshots](#-screenshots)
 - [Delivery Flow](#-delivery-flow)
 - [Week Progress](#-week-progress)
@@ -22,13 +23,13 @@ A modern, role-based Local Delivery & Logistics Management Platform built with R
 
 ## 🎯 Overview
 
-Zyroo Local Delivery is a frontend prototype for managing local deliveries in Pakistan. It provides role-based dashboards for:
+Zyroo Local Delivery is a full-stack frontend prototype for managing local deliveries in Pakistan. It provides role-based dashboards for:
 
 - **🏢 Business Users** — Create, edit, assign, and cancel delivery orders
 - **🏍️ Riders** — Accept deliveries and update status in real-time
 - **👤 Customers** — Track their orders with live status updates
 
-The project uses **mock data** stored in `localStorage` (no backend required), making it perfect for learning and prototyping.
+**Week 5 Update:** The platform now uses a **REST API** (via JSON Server) instead of mock data, with **advanced state management** using React Context, **real-time polling**, and **optimistic UI updates**.
 
 ---
 
@@ -36,7 +37,7 @@ The project uses **mock data** stored in `localStorage` (no backend required), m
 
 **[View Live Demo](https://zyroo-local-delievery.vercel.app/)**
 
-> Deployed on Vercel with auto-deploy from GitHub.
+> Frontend deployed on Vercel. API hosted separately.
 
 ---
 
@@ -47,57 +48,36 @@ The project uses **mock data** stored in `localStorage` (no backend required), m
 - 3 User Roles: **Business**, **Rider**, **Customer**
 - Role-based navigation & protected routes
 - Demo accounts for quick testing
-- Persistent login (localStorage)
 
 ### 📦 Order Management (Week 3)
-- **Create Order** — Business creates new delivery orders
-- **Edit Order** — Update customer info, addresses, package details
-- **Assign Rider** — Choose from available riders
-- **Cancel Order** — With confirmation dialog
+- **Create Order**, **Edit Order**, **Cancel Order**
+- **Assign Rider** with modal selection
 - **Order Status Flow** — Pending → Assigned → Accepted → Picked Up → In Transit → Delivered
-- **Delivery Timeline** — Visual progress tracking
-- **Status History** — Full audit log of status changes
+- **Delivery Timeline** with status history
 
-### 🏍️ Rider Features
-- **Rider Dashboard** — Assigned deliveries overview
-- **Accept Delivery** — One-click accept
-- **Update Status** — Mark as Picked Up, In Transit, Delivered
-- **Delivery Stats** — Pending, Active, Completed
+### 🗺️ Tracking & Notifications (Week 4)
+- Live delivery tracking with real map (Leaflet)
+- Route visualization
+- Estimated delivery time
+- Notification bell with unread count
 
-### 👤 Customer Features
-- **My Orders** — View all personal orders
-- **Live Tracking** — Real map with rider location
-- **Order Details** — Complete information with timeline
-
-### 📍 Delivery Tracking & Notifications (Week 4) 🆕
-- **Tracking Page** — Dedicated delivery tracking experience
-- **🗺️ Real Map Interface** — Interactive Leaflet map with OpenStreetMap
-  - Pickup marker (📦 blue)
-  - Rider marker (🏍️ red) — **animated**, moves along route
-  - Delivery marker (🏠 green)
-  - Red dashed route line connecting all points
-  - Pulsing circle around rider location
-- **Rider Information** — Name, avatar, phone, vehicle, status, current location
-- **Estimated Delivery** — Simulated ETA on the tracking page
-- **Delivery Timeline** — 6-step visual progress (Pending → Assigned → Accepted → Picked Up → In Transit → Delivered)
-- **Status History** — Vertical timeline with timestamps
-- **🔔 Notifications System**
-  - Bell icon with unread count badge
-  - Dropdown panel with recent notifications
-  - Full notifications page (`/notifications`)
-  - Filters: All / Unread / Read
-  - Mark as read / Mark all as read / Clear all
-  - localStorage persistence
-- **🔍 Search Orders** — by Order ID, customer name, or rider name
-- **🎛️ Filters** — Filter orders by status, date, and rider
-- **📱 Responsive Tracking** — Works on mobile, tablet, and desktop
+### 🚀 Advanced Platform Integration (Week 5) ⭐ NEW
+- **REST API Integration** — JSON Server providing `/users`, `/orders`, `/riders`, `/notifications`
+- **Central API Service Layer** — `services/api.js`, `authService.js`, `orderService.js`, `riderService.js`, `notificationService.js`
+- **Advanced State Management** — React Context (`AuthContext`, `OrdersContext`, `NotificationsContext`)
+- **Real-Time Updates** — 30-second polling for live sync
+- **Optimistic UI Updates** — Instant UI feedback with rollback on failure
+- **Advanced Notifications** — Event-based auto-creation
+- **Advanced Search & Filters** — Status, Rider, Date filters
+- **Pagination** — 5 orders per page with Previous/Next controls
+- **Loading / Error / Retry States** — Proper API state handling
+- **Environment Configuration** — `.env` for API URL
+- **Role-Based Actions** — Business, Rider, Customer permissions enforced
 
 ### 🎨 Design & UX
-- Fully **responsive** (360px, 768px, 1440px)
+- Fully **responsive** (mobile, tablet, desktop)
 - **Red-Orange theme** with modern gradients
-- **Smooth animations** — fade, slide, pulse, hover
-- **Progress bar** on Create Order form
-- **Rider Action Panel** — Accept/Pickup/Deliver buttons
+- **Smooth animations** — fade, slide, pulse
 - Clean, professional, production-ready UI
 
 ---
@@ -109,26 +89,38 @@ The project uses **mock data** stored in `localStorage` (no backend required), m
 | **React 19** | UI Framework |
 | **React Router DOM 7** | Client-side routing |
 | **Vite 8** | Build tool & dev server |
-| **Leaflet 1.9** | Real map integration |
-| **React Leaflet 4** | React wrapper for Leaflet |
+| **JSON Server** | Mock REST API backend |
+| **React Context** | State management |
 | **Lucide React** | Icons |
+| **Leaflet + React Leaflet** | Map integration |
 | **CSS3** | Custom styling |
-| **localStorage** | Data persistence (mock backend) |
-| **Vercel** | Deployment |
+| **Vercel** | Frontend deployment |
 
 ---
 
-## 📁 Project Structure
-zyroo-local-delivery/
-├── public/
+## 📁 Architecture
+zyroo-local-delievery/
+├── db.json # Mock API database
+├── .env # Environment variables (local)
+├── .env.production # Environment variables (production)
 ├── src/
+│ ├── api/
+│ │ └── config.js # API URL & endpoints
+│ ├── services/ # ⭐ Central API layer
+│ │ ├── api.js # HTTP wrapper
+│ │ ├── authService.js # Login / Register
+│ │ ├── orderService.js # Orders CRUD
+│ │ ├── riderService.js # Riders
+│ │ └── notificationService.js # Notifications
+│ ├── context/ # ⭐ State management
+│ │ ├── AuthContext.jsx
+│ │ ├── OrdersContext.jsx
+│ │ └── NotificationsContext.jsx
 │ ├── components/
-│ │ ├── DeliveryMap.jsx ⭐ NEW (Week 4)
+│ │ ├── DeliveryMap.jsx
 │ │ ├── Footer.jsx
 │ │ ├── Navbar.jsx
 │ │ └── ProtectedRoute.jsx
-│ ├── context/
-│ │ └── AuthContext.jsx
 │ ├── data/
 │ │ ├── mockData.js
 │ │ └── users.js
@@ -138,7 +130,7 @@ zyroo-local-delivery/
 │ │ ├── EditOrder.jsx
 │ │ ├── Home.jsx
 │ │ ├── Login.jsx
-│ │ ├── Notifications.jsx ⭐ NEW (Week 4)
+│ │ ├── Notifications.jsx
 │ │ ├── OrderDetails.jsx
 │ │ ├── Orders.jsx
 │ │ ├── Register.jsx
@@ -152,65 +144,78 @@ zyroo-local-delivery/
 ├── vite.config.js
 └── README.md
 
-
 ---
 
-## 🚀 Setup Instructions
+## ⚙️ Setup Instructions
 
 ### Prerequisites
-- Node.js (v18 or higher)
+- Node.js v18 or higher
 - npm or yarn
 
 ### Installation
 
-```bash
-# 1. Clone the repository
-git clone https://github.com/Ammara288/zyroo-local-delievery.git
-
-# 2. Navigate to project folder
-cd zyroo-local-delievery
-
-# 3. Install dependencies
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Ammara288/zyroo-local-delievery.git
+   cd zyroo-local-delievery
+   Install dependencies:
 npm install
 
-# 4. Start dev server
+Create .env file in root:
+VITE_API_URL=http://localhost:3001
+
+Start Mock API (Terminal 1):
+npm run server
+
+API runs on http://localhost:3001
+
+Start Frontend (Terminal 2):
 npm run dev
+App runs on http://localhost:5173
+Open in browser: http://localhost:5173
 
-The app will open at http://localhost:5173 (or 5174 if port is busy).
-
-Build for Production
-npm run build
 
 👥 Demo Accounts
-Use these accounts to test different roles:
+Role	                        Email	                              Password
+🏢 Business	                  business@zyroo.com	               business123
+🏍️ Rider	                   rider@zyroo.com	                   rider123
+👤 Customer	                  customer@zyroo.com	               customer123
+💡 Quick Login: Use the demo buttons on the Login page.
 
-Role	                      Email	                                                   Password
-🏢 Business                	business@zyroo.com                                       	business123
-🏍️ Rider	                 rider@zyroo.com	                                         rider123
-👤 Customer	                 customer@zyroo.com	                                         customer123
-👑 Admin	                 admin@zyroo.com	                                         admin123
-Quick Login: Use the demo buttons on the Login page.
+🔌 API Endpoints
+JSON Server provides these REST endpoints:
+
+Endpoint	                  Methods	                                        Purpose
+/users	                  GET, POST, PUT, DELETE	                         User accounts
+/orders	                  GET, POST, PUT, DELETE	                         Delivery orders
+/riders	                  GET	                                           Rider list
+/notifications	            GET, POST, PUT, DELETE	                         User notifications
+
+Example:
+GET http://localhost:3001/orders
+GET http://localhost:3001/orders/DL001
+POST http://localhost:3001/orders
 
 📸 Screenshots
-🏠 Home Page (Desktop)
+🏠 Home Page
 https://screenshots/01-home.png
 
-📊 Dashboard
+📊 Business Dashboard (API-driven)
 https://screenshots/02-dashboard.png
 
-📦 Orders Management (Search & Filters)
+📦 Orders Management (Search, Filters, Pagination)
 https://screenshots/03-orders.png
 
 🗺️ Live Tracking with Real Map
 https://screenshots/04-tracking-map.png
 
-🔔 Notifications
+🔔 Notifications (API-driven)
 https://screenshots/05-notifications.png
 
 📋 Order Details
 https://screenshots/06-order-details.png
 
-➕ Create Order
+➕ Create Order Form
 https://screenshots/07-create-order.png
 
 🔐 Login Page
@@ -223,99 +228,75 @@ https://screenshots/09-mobile-home.png
 https://screenshots/10-tablet-home.png
 
 🔄 Delivery Flow
-Complete Workflow
 
-1. Business Creates Order
-   ↓
-2. Business Assigns Rider
-   ↓
-3. Rider Accepts Delivery
-   ↓
-4. Rider Picks Up Package
-   ↓
-5. Order is In Transit
-   ↓
-6. Customer Tracks via Real Map
-   ↓
-7. Rider Marks Delivered
-   ↓
+1. Business Creates Order        →  API POST /orders
+     ↓
+2. Business Assigns Rider        →  API PUT /orders/:id
+     ↓
+3. Rider Accepts Delivery        →  API PUT /orders/:id
+     ↓
+4. Rider Picks Up Package        →  API PUT /orders/:id
+     ↓
+5. Order is In Transit           →  API PUT /orders/:id
+     ↓
+6. Customer Tracks via Live Map
+     ↓
+7. Rider Marks Delivered         →  API PUT /orders/:id
+     ↓
 8. Customer Receives Notification
 
-Status Flow
+Status Flow:
+
 Pending → Assigned → Accepted → Picked Up → In Transit → Delivered
 
-Role-Based Views
-Step	                     Business	                  Rider	                 Customer
-Create Order	                ✅	                     —	                       —
-Assign Rider	                ✅	                     —	                       —
-Accept Delivery              	—	                      ✅	                       —
-Update Status	                —	                      ✅	                       —
-Track Order                  	✅	                     ✅	                     ✅
-View Notifications	            ✅	                     ✅	                     ✅
+Role-Based Permissions
+
+Action	                                     Business	                         Rider	                           Customer
+Create Order	                                ✅	                               —	                                 —
+Edit Order	                                   ✅	                               —	                                 —
+Assign Rider	                                ✅	                               —                                 	—
+Cancel Order	                                ✅	                               —                                	—
+Accept Delivery	                             —	                                ✅	                              —
+Update Status	                                —	                                ✅	                              —
+Track Order	                                   ✅	                               ✅	                               ✅
+View Notifications	                          ✅	                               ✅	                               ✅
 
 📅 Week Progress
+✅ Week 1: Frontend MVP
+Home, Dashboard, Orders, Order Details, Tracking
 
+✅ Week 2: Authentication & Roles
+Login, Register, Logout
+3 User Roles & Protected routes
 
-Week 2 — Authentication & Roles ✅
+✅ Week 3: Order & Delivery Management
+Create, Edit, Assign, Cancel Orders
+Rider Dashboard, Status Updates
+Delivery Timeline
 
-Login / Register / Logout
-3 user roles (Business, Rider, Customer)
-Protected routes
-Role-based navigation
-Demo accounts
+✅ Week 4: Tracking & Notifications
+Live delivery tracking with real map
+Notifications system
+Search & filters
 
-Week 3 — Order Management ✅
+✅ Week 5: Advanced Platform Integration
+REST API Integration (JSON Server)
+Central API service layer
+Advanced state management (React Context)
+Real-time updates (30-second polling)
+Optimistic UI updates
+Advanced notifications (event-based)
+Advanced search & filters
+Pagination (5 orders per page)
+Loading / Error / Retry states
+Environment configuration (.env)
 
-Create / Edit / Cancel order
-Rider assignment
-Delivery status updates
-Rider action panel
-Customer order views
-
-Week 4 — Delivery Tracking & Notifications ✅
-
-Real Leaflet map with OpenStreetMap
-Animated rider marker with pulsing circle
-Pickup / Rider / Delivery markers
-Red dashed route line
-Notification system
-Bell icon with badge
-Dropdown panel
-Full notifications page
-Filters (All / Unread / Read)
-Search orders (Order ID, Customer, Rider)
-Filter orders (Status, Date, Rider)
-Responsive design (mobile, tablet, desktop)
-Smooth animations & transitions
-Progress bar on Create Order
-Delivery timeline (6 steps)
-
-✅ Week 4 Success Criteria
-☑ Users can view delivery progress
-☑ Basic rider and route information displayed
-☑ Delivery updates via notifications
-☑ Find orders using search and filters
-☑ Responsive on mobile, tablet, desktop
-☑ Real map interface (Leaflet + OpenStreetMap)
-☑ Animated rider marker
-☑ Notification badge on navbar
-
-🎨 Design Highlights
-Theme: Red-Orange gradient (#dc2626 → #f97316)
-Typography: Segoe UI, clean hierarchy
-Cards: Soft shadows, hover lift effects
-Buttons: Gradient backgrounds, smooth transitions
-Animations: fadeIn, fadeInUp, pulse, markerPulse
-Icons: Lucide React (consistent style)
-Map: CartoDB Light tiles (clean, modern)
 
 👤 Author
-
 Ammara Batool
+Frontend Development Intern @ ZYROO
 GitHub: @Ammara288
 Email: ammarabatool375@gmail.com
 Location: Lahore, Pakistan
-
 📝 License
-
-This project is created as part of the Zyroo Internship Program — Week 4 Task (Delivery Tracking & Notifications). Free to use for learning purposes.
+Part of the ZYROO Frontend Development Internship Program (Week 1 - Week 5).

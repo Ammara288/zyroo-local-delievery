@@ -1,48 +1,73 @@
-import React, { useState, useEffect } from 'react';
-import { orders as mockOrders } from '../data/mockData';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useOrders } from "../context/OrdersContext";
+import { RefreshCw, Loader } from "lucide-react";
 
 function Dashboard() {
   const { user } = useAuth();
-  const [orders, setOrders] = useState([]);
+  const { orders, loading, error, refreshOrders } = useOrders();
 
-  // Load orders from localStorage or mockData
-  useEffect(() => {
-    const saved = localStorage.getItem('zyroo_orders');
-    setOrders(saved ? JSON.parse(saved) : mockOrders);
-  }, []);
-
+  // Stats
   const total = orders.length;
-  const pending = orders.filter(o => o.status === 'Pending').length;
-  const inDelivery = orders.filter(o => ['Assigned','Accepted','Picked Up','In Transit'].includes(o.status)).length;
-  const completed = orders.filter(o => o.status === 'Delivered').length;
+  const pending = orders.filter((o) => o.status === "Pending").length;
+  const inDelivery = orders.filter((o) =>
+    ["Assigned", "Accepted", "Picked Up", "In Transit"].includes(o.status)
+  ).length;
+  const completed = orders.filter((o) => o.status === "Delivered").length;
 
   // Recent orders (latest 3)
   const recentOrders = [...orders].reverse().slice(0, 3);
 
   // Role-based heading
   const roleHeading = {
-    business: { icon: '🏢', title: 'Business Dashboard', subtitle: 'Overview of your delivery operations' },
-    rider: { icon: '🏍️', title: 'Rider Dashboard', subtitle: 'Your assigned deliveries' },
-    customer: { icon: '👤', title: 'My Orders', subtitle: 'Track your deliveries' },
-    admin: { icon: '👑', title: 'Admin Dashboard', subtitle: 'System overview' },
+    business: { icon: "🏢", title: "Business Dashboard", subtitle: "Overview of your delivery operations" },
+    rider: { icon: "🏍️", title: "Rider Dashboard", subtitle: "Your assigned deliveries" },
+    customer: { icon: "👤", title: "My Orders", subtitle: "Track your deliveries" },
+    admin: { icon: "👑", title: "Admin Dashboard", subtitle: "System overview" },
   };
 
   const heading = roleHeading[user?.role] || roleHeading.business;
+
+  // Loading state
+  if (loading && orders.length === 0) {
+    return (
+      <div className="dashpage">
+        <div className="loading-state">
+          <Loader className="spin" size={48} />
+          <h2>Loading dashboard...</h2>
+          <p>Fetching data from server</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashpage">
       {/* Header */}
       <div className="dashhead">
-        <h1>{heading.icon} {heading.title}</h1>
-        <p>{heading.subtitle}</p>
-        {user?.name && (
-          <p className="dashuser">
-            Welcome back, <b>{user.name}</b>!
-          </p>
-        )}
+        <div>
+          <h1>{heading.icon} {heading.title}</h1>
+          <p>{heading.subtitle}</p>
+          {user?.name && (
+            <p className="dashuser">
+              Welcome back, <b>{user.name}</b>!
+            </p>
+          )}
+        </div>
+        <button className="refresh-btn" onClick={refreshOrders} disabled={loading}>
+          <RefreshCw size={18} className={loading ? "spin" : ""} />
+          Refresh
+        </button>
       </div>
+
+      {/* Error State */}
+      {error && (
+        <div className="error-banner">
+          <span>⚠️ {error}</span>
+          <button onClick={refreshOrders}>Retry</button>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="dashstats">
@@ -60,7 +85,7 @@ function Dashboard() {
         </div>
 
         {recentOrders.length === 0 ? (
-          <div className="orders-empty" style={{ padding: '40px 20px' }}>
+          <div className="orders-empty" style={{ padding: "40px 20px" }}>
             <p>No orders yet.</p>
           </div>
         ) : (
@@ -70,7 +95,9 @@ function Dashboard() {
                 <span className="dashorder-id">{order.id}</span>
                 <div>
                   <p className="dashorder-name">{order.customer}</p>
-                  <p className="dashorder-route">{order.pickup} → {order.delivery}</p>
+                  <p className="dashorder-route">
+                    {order.pickup} → {order.delivery}
+                  </p>
                 </div>
               </div>
               <StatusBadge status={order.status} />
@@ -91,11 +118,15 @@ const StatCard = ({ icon, label, value }) => (
 );
 
 const StatusBadge = ({ status }) => {
-  const cls = {
-    'Pending': 'status-pending',
-    'In Transit': 'status-transit',
-    'Delivered': 'status-delivered',
-  }[status] || 'status-pending';
+  const cls =
+    {
+      Pending: "status-pending",
+      Assigned: "status-assigned",
+      Accepted: "status-accepted",
+      "Picked Up": "status-pickedup",
+      "In Transit": "status-transit",
+      Delivered: "status-delivered",
+    }[status] || "status-pending";
 
   return <span className={`statusbadge ${cls}`}>{status}</span>;
 };

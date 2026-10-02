@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { User, Phone, MapPin, Package, AlertCircle, Save, ArrowLeft, CreditCard, Weight, Clock, FileText } from "lucide-react";
-import { orders as mockOrders, PRIORITY_OPTIONS, PAYMENT_OPTIONS } from "../data/mockData";
+import { useOrders } from "../context/OrdersContext";
+import { PRIORITY_OPTIONS, PAYMENT_OPTIONS } from "../data/mockData";
 
 export default function EditOrder() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { orders, loading: ordersLoading, updateOrder } = useOrders();
 
-  const savedOrders = localStorage.getItem("zyroo_orders");
-  const allOrders = savedOrders ? JSON.parse(savedOrders) : mockOrders;
-
-  const existing = allOrders.find(o => o.id === id);
+  const existing = orders.find((o) => o.id === id);
 
   const [form, setForm] = useState({
     customer: existing?.customer || "",
@@ -27,21 +26,33 @@ export default function EditOrder() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (!existing) return (
-    <div className="detail-page">
-      <div className="detail-empty">
-        <h2>Order not found</h2>
-        <Link to="/orders" className="detail-back">← Back to Orders</Link>
+  if (ordersLoading && !existing) {
+    return (
+      <div className="detail-page">
+        <div className="detail-empty">
+          <h2>Loading order...</h2>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (!existing) {
+    return (
+      <div className="detail-page">
+        <div className="detail-empty">
+          <h2>Order not found</h2>
+          <Link to="/orders" className="detail-back">← Back to Orders</Link>
+        </div>
+      </div>
+    );
+  }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.customer || !form.customerPhone || !form.pickupAddress || !form.deliveryAddress || !form.packageDetails) {
@@ -51,29 +62,29 @@ export default function EditOrder() {
 
     setLoading(true);
 
-    const updated = allOrders.map(o => {
-      if (o.id === id) {
-        return {
-          ...o,
-          customer: form.customer,
-          customerPhone: form.customerPhone,
-          pickup: form.pickupAddress.split(",")[0] || form.pickupAddress,
-          pickupAddress: form.pickupAddress,
-          delivery: form.deliveryAddress.split(",")[0] || form.deliveryAddress,
-          deliveryAddress: form.deliveryAddress,
-          packageDetails: form.packageDetails,
-          packageWeight: form.packageWeight,
-          deliveryTime: form.deliveryTime,
-          specialInstructions: form.specialInstructions,
-          priority: form.priority,
-          paymentMethod: form.paymentMethod,
-        };
-      }
-      return o;
-    });
+    const updates = {
+      customer: form.customer,
+      customerPhone: form.customerPhone,
+      pickup: form.pickupAddress.split(",")[0] || form.pickupAddress,
+      pickupAddress: form.pickupAddress,
+      delivery: form.deliveryAddress.split(",")[0] || form.deliveryAddress,
+      deliveryAddress: form.deliveryAddress,
+      packageDetails: form.packageDetails,
+      packageWeight: form.packageWeight,
+      deliveryTime: form.deliveryTime,
+      specialInstructions: form.specialInstructions,
+      priority: form.priority,
+      paymentMethod: form.paymentMethod,
+    };
 
-    localStorage.setItem("zyroo_orders", JSON.stringify(updated));
-    setTimeout(() => navigate(`/orders/${id}`), 400);
+    const result = await updateOrder(id, updates);
+
+    if (result.success) {
+      setTimeout(() => navigate(`/orders/${id}`), 300);
+    } else {
+      setError(result.error || "Failed to update");
+      setLoading(false);
+    }
   };
 
   return (
@@ -93,7 +104,6 @@ export default function EditOrder() {
       )}
 
       <form onSubmit={handleSubmit} className="createorder-form" noValidate>
-        {/* Customer */}
         <div className="form-section">
           <div className="form-section-head">
             <span className="form-section-icon">👤</span>
@@ -116,7 +126,6 @@ export default function EditOrder() {
           </div>
         </div>
 
-        {/* Locations */}
         <div className="form-section">
           <div className="form-section-head">
             <span className="form-section-icon">📍</span>
@@ -138,7 +147,6 @@ export default function EditOrder() {
           </label>
         </div>
 
-        {/* Package */}
         <div className="form-section">
           <div className="form-section-head">
             <span className="form-section-icon">📦</span>
@@ -180,7 +188,6 @@ export default function EditOrder() {
           </label>
         </div>
 
-        {/* Options */}
         <div className="form-section">
           <div className="form-section-head">
             <span className="form-section-icon">⚙️</span>
@@ -192,7 +199,7 @@ export default function EditOrder() {
               <div className="inputwrap">
                 <AlertCircle size={18} />
                 <select name="priority" value={form.priority} onChange={handleChange}>
-                  {PRIORITY_OPTIONS.map(p => <option key={p}>{p}</option>)}
+                  {PRIORITY_OPTIONS.map((p) => <option key={p}>{p}</option>)}
                 </select>
               </div>
             </label>
@@ -200,7 +207,7 @@ export default function EditOrder() {
               <div className="inputwrap">
                 <CreditCard size={18} />
                 <select name="paymentMethod" value={form.paymentMethod} onChange={handleChange}>
-                  {PAYMENT_OPTIONS.map(p => <option key={p}>{p}</option>)}
+                  {PAYMENT_OPTIONS.map((p) => <option key={p}>{p}</option>)}
                 </select>
               </div>
             </label>

@@ -15,7 +15,7 @@ export default function Login() {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -26,7 +26,8 @@ export default function Login() {
       return;
     }
 
-    const result = login(form.email, form.password);
+    const result = await login(form.email, form.password);
+
     if (result.success) {
       navigate("/dashboard");
     } else {
@@ -35,10 +36,19 @@ export default function Login() {
     }
   };
 
-  const quickLogin = (email, password) => {
+  const quickLogin = async (email, password) => {
+    setError("");
+    setLoading(true);
     setForm({ email, password });
-    const result = login(email, password);
-    if (result.success) navigate("/dashboard");
+
+    const result = await login(email, password);
+
+    if (result.success) {
+      navigate("/dashboard");
+    } else {
+      setError(result.error);
+      setLoading(false);
+    }
   };
 
   return (
@@ -109,6 +119,7 @@ export default function Login() {
               type="button"
               onClick={() => quickLogin("business@zyroo.com", "business123")}
               className="demobtn business"
+              disabled={loading}
             >
               <span>🏢</span> Business
             </button>
@@ -116,6 +127,7 @@ export default function Login() {
               type="button"
               onClick={() => quickLogin("rider@zyroo.com", "rider123")}
               className="demobtn rider"
+              disabled={loading}
             >
               <span>🏍️</span> Rider
             </button>
@@ -123,6 +135,7 @@ export default function Login() {
               type="button"
               onClick={() => quickLogin("customer@zyroo.com", "customer123")}
               className="demobtn customer"
+              disabled={loading}
             >
               <span>👤</span> Customer
             </button>

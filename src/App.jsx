@@ -1,6 +1,8 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+import { OrdersProvider } from "./context/OrdersContext";
+import { NotificationsProvider } from "./context/NotificationsContext";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -23,86 +25,90 @@ function App() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="app">
-      <Navbar />
+    <OrdersProvider>
+      <NotificationsProvider>
+        <div className="app">
+          <Navbar />
 
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/tracking" element={<Tracking />} />
-        <Route path="/tracking/:id" element={<Tracking />} />
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/tracking" element={<Tracking />} />
+            <Route path="/tracking/:id" element={<Tracking />} />
 
-        {/* Auth Routes - redirect to dashboard if already logged in */}
-        <Route
-          path="/login"
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
-        />
-        <Route
-          path="/register"
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />}
-        />
+            {/* Auth Routes */}
+            <Route
+              path="/login"
+              element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
+            />
+            <Route
+              path="/register"
+              element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />}
+            />
 
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+            {/* Protected Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/notifications"
-          element={
-            <ProtectedRoute>
-              <Notifications />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <Notifications />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/orders/new"
-          element={
-            <ProtectedRoute allowedRoles={["business"]}>
-              <CreateOrder />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/orders/new"
+              element={
+                <ProtectedRoute allowedRoles={["business"]}>
+                  <CreateOrder />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/orders/:id/edit"
-          element={
-            <ProtectedRoute allowedRoles={["business"]}>
-              <EditOrder />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/orders/:id/edit"
+              element={
+                <ProtectedRoute allowedRoles={["business"]}>
+                  <EditOrder />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/orders"
-          element={
-            <ProtectedRoute>
-              <Orders />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute>
+                  <Orders />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/orders/:id"
-          element={
-            <ProtectedRoute>
-              <OrderDetails />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/orders/:id"
+              element={
+                <ProtectedRoute>
+                  <OrderDetails />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Fallback - 404 */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+            {/* Fallback - 404 */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
 
-      <Footer />
-    </div>
+          <Footer />
+        </div>
+      </NotificationsProvider>
+    </OrdersProvider>
   );
 }
 

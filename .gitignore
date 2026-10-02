@@ -22,3 +22,9 @@ npm-debug.log*
 # Cache
 .cache/
 .vite/
+# Environment
+.env
+.env.local
+
+# json-server data (optional - keep out of git)
+# db.json

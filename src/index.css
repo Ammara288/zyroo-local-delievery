@@ -3103,3 +3103,469 @@ button {
     font-size: 15px;
   }
 }
+/* ============================================
+   ORDERS HEAD ACTIONS FIX
+   ============================================ */
+
+.orders-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.head-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  background: #fff;
+  border: 1.5px solid #efe5df;
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #3a3a3a;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  border-color: #dc2626;
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refresh-btn .spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.create-order-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 26px;
+  background: linear-gradient(135deg, #dc2626, #f97316);
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 15px;
+  text-decoration: none;
+  box-shadow: 0 10px 26px rgba(220, 38, 38, 0.28);
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+
+.create-order-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(220, 38, 38, 0.35);
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .orders-head-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .head-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .refresh-btn,
+  .create-order-btn {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* ============================================
+   LOADING / ERROR STATES
+   ============================================ */
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  text-align: center;
+}
+
+.loading-state .spin {
+  animation: spin 1s linear infinite;
+  color: #dc2626;
+}
+
+.loading-state h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.loading-state p {
+  color: #6b7280;
+  font-size: 14.5px;
+}
+
+.error-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.error-banner button {
+  padding: 8px 18px;
+  background: #dc2626;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.error-banner button:hover {
+  background: #b91c1c;
+}
+
+.modal-loading {
+  text-align: center;
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 14px;
+}
+/* Dashboard head with refresh button */
+.dashhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 640px) {
+  .dashhead {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dashhead .refresh-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* New status badges */
+.status-assigned {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.status-accepted {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+.status-pickedup {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.status-transit {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.status-delivered {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+/* ============================================
+   NOTIFICATIONS - UPDATES
+   ============================================ */
+
+/* Delete button on notification */
+.notif-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: transparent;
+  color: #9ca3af;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.notif-delete-btn:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* Notification item layout */
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #efe5df;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.notification-item:hover {
+  border-color: #fca5a5;
+  transform: translateX(2px);
+}
+
+.notification-item.unread {
+  background: #fef7f5;
+  border-left: 4px solid #dc2626;
+}
+
+/* Icon colors */
+.notif-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.notif-icon-blue { background: #dbeafe; }
+.notif-icon-green { background: #dcfce7; }
+.notif-icon-orange { background: #ffedd5; }
+.notif-icon-red { background: #fee2e2; }
+.notif-icon-purple { background: #f3e8ff; }
+
+/* Notif head actions */
+.notif-head-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .notif-head-actions {
+    width: 100%;
+  }
+  .notif-head-actions .refresh-btn,
+  .notif-head-actions .notif-btn-outline {
+    flex: 1;
+    justify-content: center;
+  }
+}
+/* ============================================
+   TRACKING - WEEK 5 UPDATES
+   ============================================ */
+
+.tracking-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tracking-head-actions .refresh-btn {
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.tracking-last-update {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #fff;
+  border: 1px solid #efe5df;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.tracking-last-update b {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* Progress Bar */
+.tracking-progress-wrap {
+  background: #fff;
+  border: 1px solid #efe5df;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.tracking-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+.tracking-progress-info b {
+  color: #dc2626;
+  font-size: 15px;
+}
+
+.tracking-progress-bar {
+  height: 8px;
+  background: #f5ede8;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.tracking-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #dc2626, #f97316);
+  border-radius: 20px;
+  transition: width 0.5s ease;
+}
+
+@media (max-width: 640px) {
+  .tracking-head-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  .tracking-head-actions .refresh-btn {
+    justify-content: center;
+    width: 100%;
+  }
+}
+/* ============================================
+   PAGINATION CONTROLS
+   ============================================ */
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: #fff;
+  border: 1.5px solid #efe5df;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3a3a3a;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: #dc2626;
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.page-num {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  border: 1.5px solid #efe5df;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3a3a3a;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.page-num:hover {
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.page-num.active {
+  background: linear-gradient(135deg, #dc2626, #f97316);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.3);
+}
+
+@media (max-width: 640px) {
+  .pagination-controls {
+    gap: 8px;
+  }
+  .page-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .page-num {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+}

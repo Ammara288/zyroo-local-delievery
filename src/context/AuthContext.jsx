@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { users as mockUsers } from "../data/users";
+import { loginUser, registerUser, updateUserProfile } from "../services/authService";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Load user from localStorage on app start
   useEffect(() => {
@@ -20,74 +21,87 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  // Login
-  const login = (email, password) => {
-    const foundUser = mockUsers.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-    );
+  // Login via API
+  const login = async (email, password) => {
+    setError(null);
+    setLoading(true);
 
-    if (!foundUser) {
-      return { success: false, error: "Invalid email or password" };
+    try {
+      const result = await loginUser(email, password);
+
+      if (result.success) {
+        setUser(result.user);
+        localStorage.setItem("zyroo_user", JSON.stringify(result.user));
+        setLoading(false);
+        return { success: true, user: result.user };
+      } else {
+        setError(result.error);
+        setLoading(false);
+        return { success: false, error: result.error };
+      }
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+      return { success: false, error: err.message };
     }
-
-    const userData = { ...foundUser };
-    delete userData.password;
-
-    setUser(userData);
-    localStorage.setItem("zyroo_user", JSON.stringify(userData));
-    return { success: true, user: userData };
   };
 
-  // Register
-  const register = (userData) => {
-    const exists = mockUsers.find(
-      (u) => u.email.toLowerCase() === userData.email.toLowerCase()
-    );
+  // Register via API
+  const register = async (userData) => {
+    setError(null);
+    setLoading(true);
 
-    if (exists) {
-      return { success: false, error: "Email already registered" };
+    try {
+      const result = await registerUser(userData);
+
+      if (result.success) {
+        setUser(result.user);
+        localStorage.setItem("zyroo_user", JSON.stringify(result.user));
+        setLoading(false);
+        return { success: true, user: result.user };
+      } else {
+        setError(result.error);
+        setLoading(false);
+        return { success: false, error: result.error };
+      }
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+      return { success: false, error: err.message };
     }
-
-    const newUser = {
-      id: "U" + Date.now(),
-      ...userData,
-      createdAt: new Date().toISOString(),
-    };
-
-    mockUsers.push(newUser);
-
-    const userWithoutPassword = { ...newUser };
-    delete userWithoutPassword.password;
-
-    setUser(userWithoutPassword);
-    localStorage.setItem("zyroo_user", JSON.stringify(userWithoutPassword));
-
-    return { success: true, user: userWithoutPassword };
   };
 
   // Logout
   const logout = () => {
     setUser(null);
+    setError(null);
     localStorage.removeItem("zyroo_user");
   };
 
-  // Update profile
-  const updateProfile = (updates) => {
-    const updatedUser = { ...user, ...updates };
-    setUser(updatedUser);
-    localStorage.setItem("zyroo_user", JSON.stringify(updatedUser));
+  // Update profile via API
+  const updateProfile = async (updates) => {
+    if (!user) return { success: false, error: "Not logged in" };
 
-    const index = mockUsers.findIndex((u) => u.id === user.id);
-    if (index !== -1) {
-      mockUsers[index] = { ...mockUsers[index], ...updates };
+    try {
+      const result = await updateUserProfile(user.id, { ...user, ...updates });
+
+      if (result.success) {
+        const updatedUser = { ...user, ...updates };
+        setUser(updatedUser);
+        localStorage.setItem("zyroo_user", JSON.stringify(updatedUser));
+        return { success: true };
+      } else {
+        return { success: false, error: result.error };
+      }
+    } catch (err) {
+      return { success: false, error: err.message };
     }
-
-    return { success: true };
   };
 
   const value = {
     user,
     loading,
+    error,
     login,
     register,
     logout,
