@@ -1,1 +1,1 @@
-web: npx json-server db.json --host 0.0.0.0 --port $PORT
+web: npm run server:prod
