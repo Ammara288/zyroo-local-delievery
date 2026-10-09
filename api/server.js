@@ -1,6 +1,9 @@
 const jsonServer = require('json-server');
+const path = require('path');
 const server = jsonServer.create();
-const router = jsonServer.router('db.json');
+
+// Read db.json from api folder
+const router = jsonServer.router(path.join(__dirname, 'db.json'));
 const middlewares = jsonServer.defaults({ static: false });
 
 // CORS - allow Vercel frontend
